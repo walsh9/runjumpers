@@ -1,0 +1,13 @@
+canvas {
+  background: #b4a56a;
+  display: block;
+  width: 320px;
+  height: 288px;
+  margin: auto;
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -o-crisp-edges;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+}
