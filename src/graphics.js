@@ -1,4 +1,4 @@
-let Graphics = {}
+let Graphics = {};
 
 Graphics.loadTileSet = function(imageSource, tileWidth, tileHeight) {
   return new Promise(function(resolve) {
@@ -30,6 +30,6 @@ Graphics.drawTile = function(tileSet, tileX, tileY, x, y, ctx) {
   ctx.drawImage(tileSet.img,
     tX, tY, tileSet.tileWidth, tileSet.tileHeight,
     x,  y,  tileSet.tileWidth, tileSet.tileHeight);
-}
+};
 
 export default Graphics;

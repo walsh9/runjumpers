@@ -10,7 +10,7 @@ export default class Timer {
   start() {
     if (this.started === false) {
       this.started = true;
-      this.currentTime = Date.now()
+      this.currentTime = Date.now();
       this.game.init();
     }
     requestAnimationFrame(this.start.bind(this));

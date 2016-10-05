@@ -20,7 +20,7 @@ let Game = {
     this.map.render(Graphics, Gamestate.ctx);
     this.character.render(Graphics, Gamestate.ctx);
   }
-}
+};
 let gameTimer = new Timer(Game, 1 / 60);
 
 let Gamestate = {};
@@ -43,7 +43,7 @@ Promise.all([
 });
 
 window.addEventListener('keydown', function(e) {
-  let key = e.key
+  let key = e.key;
   switch(key) {
   case 'w':
     Game.character.setNextPart('rearHair');

@@ -25,7 +25,7 @@ export default class Character {
       this.velocity.y += time.delta * this.acceleration.y;
       this.pos.y      += time.delta * this.velocity.y;
     } else {
-      this.state = 'running'
+      this.state = 'running';
       this.velocity.y = 0;
       this.pos.y      = floorHeight;
     }

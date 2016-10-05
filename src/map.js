@@ -37,6 +37,6 @@ export default class Map {
         graphics.drawTile(this.tiles.mapTiles, COLUMN_TOP, 0, x, y[2], ctx);
         break;
       }
-    })
+    });
   }
 }
