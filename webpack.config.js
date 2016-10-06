@@ -3,11 +3,13 @@ var webpack = require('webpack');
 
 module.exports = {
   context: path.join(__dirname, 'src'),
-  entry: [
+  include: [
     './utils.js',
     './graphics.js',
     './character.js',
     './map.js',
+    './screen.js',
+    './screens',
     './timer.js',
     './game.js'
   ],

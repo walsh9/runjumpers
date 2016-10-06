@@ -1,4 +1,4 @@
-import { near } from './utils';
+import { near, mod } from './utils';
 
 export default class Character {
   constructor(tiles, map) {
@@ -53,10 +53,6 @@ export default class Character {
     graphics.drawTile(this.tiles.frontHair, this.parts.frontHair, 0, this.pos.x, this.pos.y, ctx);
   }
 
-  _checkCollision() {
-
-  }
-
   jump() {
     console.log(this.pos, this.velocity);
     if (this.velocity.y === 0) {
@@ -69,6 +65,11 @@ export default class Character {
   }
 
   setNextPart(partName) {
-    this.parts[partName] = (this.parts[partName] + 1) % this.tiles[partName].tileColumns;
+    this.parts[partName] = mod(this.parts[partName] + 1, this.tiles[partName].tileColumns);
   }
+
+  setPrevPart(partName) {
+    this.parts[partName] = mod(this.parts[partName] - 1, this.tiles[partName].tileColumns);
+  }
+
 }

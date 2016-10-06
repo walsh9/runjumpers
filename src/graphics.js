@@ -24,6 +24,11 @@ Graphics.loadTileSet = function(imageSource, tileWidth, tileHeight) {
   });
 };
 
+Graphics.clearScreen = function(ctx, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+};
+
 Graphics.drawTile = function(tileSet, tileX, tileY, x, y, ctx) {
   var tX = Math.floor(tileSet.tileWidth * tileX);
   var tY = Math.floor(tileSet.tileHeight * tileY);

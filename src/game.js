@@ -2,23 +2,17 @@ import Graphics from './graphics';
 import Character from './character';
 import Timer from './timer';
 import Map from './map';
+import TitleScreen from './screens/title';
 
-const map01 = "1121111111111211111000110111211131123111111113111110011011111000011111111113331111110000000000000000000";
-
-let Game = {
+window.Game = {
   init() {
-    this.map = new Map(Assets.Tiles, map01);
-    this.character = new Character(Assets.Tiles, this.map);
+    this.currentScreen = new TitleScreen(this);
   },
   update(time) {
-    this.map.update(time);
-    this.character.update(time);
+    this.currentScreen.update(time);
   },
   render() {
-    Gamestate.ctx.fillStyle = '#b4a56a';
-    Gamestate.ctx.fillRect(0, 0, Gamestate.ctx.canvas.width, Gamestate.ctx.canvas.height);
-    this.map.render(Graphics, Gamestate.ctx);
-    this.character.render(Graphics, Gamestate.ctx);
+    this.currentScreen.render(Graphics, Gamestate.ctx);
   }
 };
 let gameTimer = new Timer(Game, 1 / 60);
@@ -39,28 +33,13 @@ Promise.all([
   Assets.Tiles.face = tilesets[2];
   Assets.Tiles.frontHair = tilesets[3];
   Assets.Tiles.mapTiles = tilesets[4];
+  window.Game.assets = Assets;
   gameTimer.start();
 });
 
-window.addEventListener('keydown', function(e) {
-  let key = e.key;
-  switch(key) {
-  case 'w':
-    Game.character.setNextPart('rearHair');
-    break;
-  case 'a':
-    Game.character.setNextPart('body');
-    break;
-  case 's':
-    Game.character.setNextPart('face');
-    break;
-  case 'd':
-    Game.character.setNextPart('frontHair');
-    break;
-  case 'z':
-    Game.character.jump();
-    break;
-  }
+window.addEventListener('keydown', function(event) {
+  let key = event.key;
+  Game.currentScreen.keydown(key, event);
 });
 
 

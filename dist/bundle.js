@@ -49,7 +49,9 @@
 	__webpack_require__(3);
 	__webpack_require__(4);
 	__webpack_require__(5);
-	module.exports = __webpack_require__(6);
+	__webpack_require__(6);
+	__webpack_require__(7);
+	module.exports = __webpack_require__(8);
 
 
 /***/ },
@@ -109,6 +111,11 @@
 	    };
 	    imageElement.src = imageSource;
 	  });
+	};
+	
+	Graphics.clearScreen = function (ctx, color) {
+	  ctx.fillStyle = color;
+	  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 	};
 	
 	Graphics.drawTile = function (tileSet, tileX, tileY, x, y, ctx) {
@@ -193,9 +200,6 @@
 	      graphics.drawTile(this.tiles.frontHair, this.parts.frontHair, 0, this.pos.x, this.pos.y, ctx);
 	    }
 	  }, {
-	    key: '_checkCollision',
-	    value: function _checkCollision() {}
-	  }, {
 	    key: 'jump',
 	    value: function jump() {
 	      console.log(this.pos, this.velocity);
@@ -211,7 +215,12 @@
 	  }, {
 	    key: 'setNextPart',
 	    value: function setNextPart(partName) {
-	      this.parts[partName] = (this.parts[partName] + 1) % this.tiles[partName].tileColumns;
+	      this.parts[partName] = (0, _utils.mod)(this.parts[partName] + 1, this.tiles[partName].tileColumns);
+	    }
+	  }, {
+	    key: 'setPrevPart',
+	    value: function setPrevPart(partName) {
+	      this.parts[partName] = (0, _utils.mod)(this.parts[partName] - 1, this.tiles[partName].tileColumns);
 	    }
 	  }]);
 	
@@ -313,6 +322,105 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
+	var Screen = function () {
+	  function Screen(game) {
+	    _classCallCheck(this, Screen);
+	
+	    this.game = game;
+	  }
+	
+	  _createClass(Screen, [{
+	    key: "update",
+	    value: function update() {}
+	  }, {
+	    key: "render",
+	    value: function render() {}
+	  }, {
+	    key: "keydown",
+	    value: function keydown() {}
+	  }]);
+	
+	  return Screen;
+	}();
+	
+	exports.default = Screen;
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _screen = __webpack_require__(5);
+	
+	var _screen2 = _interopRequireDefault(_screen);
+	
+	var _create = __webpack_require__(10);
+	
+	var _create2 = _interopRequireDefault(_create);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var TitleScreen = function (_Screen) {
+	  _inherits(TitleScreen, _Screen);
+	
+	  function TitleScreen(game) {
+	    _classCallCheck(this, TitleScreen);
+	
+	    return _possibleConstructorReturn(this, (TitleScreen.__proto__ || Object.getPrototypeOf(TitleScreen)).call(this, game));
+	  }
+	
+	  _createClass(TitleScreen, [{
+	    key: 'render',
+	    value: function render(graphics, ctx) {
+	      graphics.clearScreen(ctx, '#b4a56a');
+	      ctx.strokeStyle = "#ffffff";
+	      ctx.strokeText('runjumpers', 30, 30);
+	      ctx.strokeText('press z to start', 30, 90);
+	    }
+	  }, {
+	    key: 'keydown',
+	    value: function keydown(key) {
+	      switch (key) {
+	        case 'z':
+	          console.log('good');
+	          this.game.currentScreen = new _create2.default(this.game);
+	          break;
+	      }
+	    }
+	  }]);
+	
+	  return TitleScreen;
+	}(_screen2.default);
+	
+	exports.default = TitleScreen;
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
 	var Timer = function () {
 	  function Timer(game, timeStep) {
 	    _classCallCheck(this, Timer);
@@ -353,7 +461,7 @@
 	exports.default = Timer;
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -366,7 +474,7 @@
 	
 	var _character2 = _interopRequireDefault(_character);
 	
-	var _timer = __webpack_require__(5);
+	var _timer = __webpack_require__(7);
 	
 	var _timer2 = _interopRequireDefault(_timer);
 	
@@ -374,24 +482,21 @@
 	
 	var _map2 = _interopRequireDefault(_map);
 	
+	var _title = __webpack_require__(6);
+	
+	var _title2 = _interopRequireDefault(_title);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var map01 = "1121111111111211111000110111211131123111111113111110011011111000011111111113331111110000000000000000000";
-	
-	var Game = {
+	window.Game = {
 	  init: function init() {
-	    this.map = new _map2.default(Assets.Tiles, map01);
-	    this.character = new _character2.default(Assets.Tiles, this.map);
+	    this.currentScreen = new _title2.default(this);
 	  },
 	  update: function update(time) {
-	    this.map.update(time);
-	    this.character.update(time);
+	    this.currentScreen.update(time);
 	  },
 	  render: function render() {
-	    Gamestate.ctx.fillStyle = '#b4a56a';
-	    Gamestate.ctx.fillRect(0, 0, Gamestate.ctx.canvas.width, Gamestate.ctx.canvas.height);
-	    this.map.render(_graphics2.default, Gamestate.ctx);
-	    this.character.render(_graphics2.default, Gamestate.ctx);
+	    this.currentScreen.render(_graphics2.default, Gamestate.ctx);
 	  }
 	};
 	var gameTimer = new _timer2.default(Game, 1 / 60);
@@ -406,29 +511,226 @@
 	  Assets.Tiles.face = tilesets[2];
 	  Assets.Tiles.frontHair = tilesets[3];
 	  Assets.Tiles.mapTiles = tilesets[4];
+	  window.Game.assets = Assets;
 	  gameTimer.start();
 	});
 	
-	window.addEventListener('keydown', function (e) {
-	  var key = e.key;
-	  switch (key) {
-	    case 'w':
-	      Game.character.setNextPart('rearHair');
-	      break;
-	    case 'a':
-	      Game.character.setNextPart('body');
-	      break;
-	    case 's':
-	      Game.character.setNextPart('face');
-	      break;
-	    case 'd':
-	      Game.character.setNextPart('frontHair');
-	      break;
-	    case 'z':
-	      Game.character.jump();
-	      break;
-	  }
+	window.addEventListener('keydown', function (event) {
+	  var key = event.key;
+	  Game.currentScreen.keydown(key, event);
 	});
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _screen = __webpack_require__(5);
+	
+	var _screen2 = _interopRequireDefault(_screen);
+	
+	var _map = __webpack_require__(4);
+	
+	var _map2 = _interopRequireDefault(_map);
+	
+	var _character = __webpack_require__(3);
+	
+	var _character2 = _interopRequireDefault(_character);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var map01 = "1121111111111211111000110111211131123111111113111110011011111000011111111113331111110000000000000000000";
+	
+	var RunningScreen = function (_Screen) {
+	  _inherits(RunningScreen, _Screen);
+	
+	  function RunningScreen(game, character) {
+	    _classCallCheck(this, RunningScreen);
+	
+	    var _this = _possibleConstructorReturn(this, (RunningScreen.__proto__ || Object.getPrototypeOf(RunningScreen)).call(this, game));
+	
+	    _this.map = new _map2.default(_this.game.assets.Tiles, map01);
+	    _this.character = character;
+	    character.map = _this.map;
+	    return _this;
+	  }
+	
+	  _createClass(RunningScreen, [{
+	    key: 'update',
+	    value: function update(time) {
+	      this.map.update(time);
+	      this.character.update(time);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(graphics, ctx) {
+	      graphics.clearScreen(ctx, '#b4a56a');
+	      this.map.render(graphics, ctx);
+	      this.character.render(graphics, ctx);
+	    }
+	  }, {
+	    key: 'keydown',
+	    value: function keydown(key) {
+	      switch (key) {
+	        case 'z':
+	          this.character.jump();
+	      }
+	    }
+	  }]);
+	
+	  return RunningScreen;
+	}(_screen2.default);
+	
+	exports.default = RunningScreen;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _screen = __webpack_require__(5);
+	
+	var _screen2 = _interopRequireDefault(_screen);
+	
+	var _utils = __webpack_require__(1);
+	
+	var _running = __webpack_require__(9);
+	
+	var _running2 = _interopRequireDefault(_running);
+	
+	var _character = __webpack_require__(3);
+	
+	var _character2 = _interopRequireDefault(_character);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var CreateScreen = function (_Screen) {
+	  _inherits(CreateScreen, _Screen);
+	
+	  function CreateScreen(game) {
+	    _classCallCheck(this, CreateScreen);
+	
+	    var _this = _possibleConstructorReturn(this, (CreateScreen.__proto__ || Object.getPrototypeOf(CreateScreen)).call(this, game));
+	
+	    _this.selection = 0;
+	    _this.choices = ['rearHair', 'frontHair', 'face', 'body', 'next'];
+	    _this.character = new _character2.default(_this.game.assets.Tiles);
+	    _this.blink = 0;
+	    return _this;
+	  }
+	
+	  _createClass(CreateScreen, [{
+	    key: 'update',
+	    value: function update(time) {
+	      this.blink = time.ticks % 10 > 5;
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(graphics, ctx) {
+	      graphics.clearScreen(ctx, '#b4a56a');
+	      ctx.strokeStyle = "#ffffff";
+	      ctx.strokeText('Create your Runjumper', 10, 10);
+	      ctx.strokeText('hair', 80, 30);
+	      ctx.strokeText('front', 80, 40);
+	      ctx.strokeText('face', 80, 50);
+	      ctx.strokeText('body', 80, 60);
+	      ctx.strokeText('GO!', 80, 80);
+	      if (this.selection < 4) {
+	        ctx.strokeText('<               >', 70, this.selection * 10 + 30);
+	      }
+	      if (this.selection === 4 && this.blink) {
+	        ctx.strokeText('[              ]', 70, 80);
+	      }
+	      this.character.render(graphics, ctx);
+	    }
+	  }, {
+	    key: 'nextScreen',
+	    value: function nextScreen() {
+	      if (this.selection === 4) {
+	        this.game.currentScreen = new _running2.default(this.game, this.character);
+	      }
+	    }
+	  }, {
+	    key: 'selectUp',
+	    value: function selectUp() {
+	      this.selection = Math.max(this.selection - 1, 0);
+	    }
+	  }, {
+	    key: 'selectDown',
+	    value: function selectDown() {
+	      this.selection = Math.min(this.selection + 1, this.choices.length);
+	    }
+	  }, {
+	    key: 'setLeft',
+	    value: function setLeft() {
+	      if (this.selection < 4) {
+	        this.character.setPrevPart(this.choices[this.selection]);
+	      }
+	    }
+	  }, {
+	    key: 'setRight',
+	    value: function setRight() {
+	      if (this.selection < 4) {
+	        this.character.setNextPart(this.choices[this.selection]);
+	      }
+	    }
+	  }, {
+	    key: 'keydown',
+	    value: function keydown(key, event) {
+	      switch (key) {
+	        case 'z':
+	          this.nextScreen();
+	          break;
+	        case 'ArrowUp':
+	          this.selectUp();
+	          event.preventDefault();
+	          break;
+	        case 'ArrowDown':
+	          this.selectDown();
+	          event.preventDefault();
+	          break;
+	        case 'ArrowLeft':
+	          this.setLeft();
+	          event.preventDefault();
+	          break;
+	        case 'ArrowRight':
+	          this.setRight();
+	          event.preventDefault();
+	          break;
+	      }
+	    }
+	  }]);
+	
+	  return CreateScreen;
+	}(_screen2.default);
+	
+	exports.default = CreateScreen;
 
 /***/ }
 /******/ ]);
