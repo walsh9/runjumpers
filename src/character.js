@@ -18,7 +18,7 @@ export default class Character {
 
   update(time) {
     let footPos = this.state === 'running' ? 11 : 18;
-    let floorHeight = 117 - this.map.whatsHere(this.pos.x + footPos).height;
+    let floorHeight = 117 - this.map.heightHere(this.pos.x + footPos);
     if (!near(this.pos.y, floorHeight, 0.1) || this.velocity.y < 0 ) {
       if (this.velocity.y <= 0) {
         this.state = 'jumping';

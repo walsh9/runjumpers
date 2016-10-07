@@ -158,18 +158,22 @@
 	  ctx.drawImage(tileSet.img, tX, tY, tileSet.tileWidth, tileSet.tileHeight, x, y, tileSet.tileWidth, tileSet.tileHeight);
 	};
 	
+	var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .!?,\'":;_-+=/\\[]()#@%{}<>^*&~|→←↑↓○●$€¥'.split('');
 	Graphics.drawText = function (tileSet, text, x, y, ctx) {
-	  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .!?,\'":;_-+=/\\[]()#@%{}<>^*&~|→←↑↓○●$€¥'.split('');
-	  var self = this;
 	  if (x === 'center') {
 	    x = Math.floor((ctx.canvas.width - text.length * (tileSet.tileWidth + 1)) / 2);
 	  }
-	  text.split('').forEach(function (char, i) {
-	    var charIndex = chars.indexOf(char);
-	    var charX = x + i * (tileSet.tileWidth + 1);
-	    var charY = ['g', 'j', 'p', 'q', 'y'].indexOf(char) > -1 ? y + 2 : y;
-	    self.drawTile(tileSet, charIndex, 0, charX, charY, ctx);
-	  });
+	  var char = void 0,
+	      charIndex = void 0,
+	      charX = void 0,
+	      charY = void 0;
+	  for (var i = 0; i < text.length; i++) {
+	    char = text.charAt(i);
+	    charIndex = chars.indexOf(char);
+	    charX = x + i * (tileSet.tileWidth + 1);
+	    charY = ['g', 'j', 'p', 'q', 'y'].indexOf(char) > -1 ? y + 2 : y;
+	    this.drawTile(tileSet, charIndex, 0, charX, charY, ctx);
+	  };
 	};
 	
 	exports.default = Graphics;
@@ -212,7 +216,7 @@
 	    key: 'update',
 	    value: function update(time) {
 	      var footPos = this.state === 'running' ? 11 : 18;
-	      var floorHeight = 117 - this.map.whatsHere(this.pos.x + footPos).height;
+	      var floorHeight = 117 - this.map.heightHere(this.pos.x + footPos);
 	      if (!(0, _utils.near)(this.pos.y, floorHeight, 0.1) || this.velocity.y < 0) {
 	        if (this.velocity.y <= 0) {
 	          this.state = 'jumping';
@@ -323,8 +327,10 @@
 	  function Timer(game, timeStep) {
 	    _classCallCheck(this, Timer);
 	
-	    this.runTime = 0;
-	    this.ticks = 0;
+	    this.time = {};
+	    this.time.runTime = 0;
+	    this.time.ticks = 0;
+	    this.time.delta = 0;
 	    this.started = false;
 	    this.timeStep = timeStep;
 	    this.game = game;
@@ -343,12 +349,12 @@
 	      var frameTime = newTime - this.currentTime;
 	      this.currentTime = newTime;
 	      while (frameTime > 0) {
-	        var delta = Math.min(frameTime, this.timeStep);
-	        frameTime -= delta;
-	        this.runTime += delta;
-	        this.game.update({ delta: delta, ticks: this.ticks, runTime: this.runTime });
+	        this.time.delta = Math.min(frameTime, this.timeStep);
+	        frameTime -= this.time.delta;
+	        this.time.runTime += this.time.delta;
+	        this.game.update(this.time);
 	      }
-	      this.ticks++;
+	      this.time.ticks++;
 	      this.game.render();
 	    }
 	  }]);
@@ -374,6 +380,16 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
+	var Y_FROM_FLOOR = [128, 112, 96, 80, 68];
+	var GROUND = 0;
+	var COLUMN_ROOT = 1;
+	var COLUMN_MID = 2;
+	var COLUMN_TOP = 3;
+	var CLOUD_RIGHT = 8;
+	var CLOUD_LEFT = 7;
+	var PLATFORM = 9;
+	var HEIGHTS = [-100, 13, 29, 45, 61];
+	
 	var Map = function () {
 	  function Map(tiles, mapstring) {
 	    _classCallCheck(this, Map);
@@ -393,56 +409,51 @@
 	      return { x: (0, _utils.randomBetween)(-6, 160), y: (0, _utils.randomBetween)(0, 120), speed: (0, _utils.randomBetween)(0.05, 0.2) };
 	    }
 	  }, {
-	    key: 'update',
-	    value: function update(time) {
-	      var _this = this;
-	
-	      this.x -= time.delta * 0.1;
-	
-	      this.clouds.forEach(function (cloud) {
-	        if (cloud.x > -40) {
-	          cloud.x -= time.delta * cloud.speed;
-	        } else {
-	          cloud.x = 160;
-	          cloud.y = _this._randomCloud().y;
-	          cloud.speed = _this._randomCloud().speed;
-	        }
-	      });
+	    key: '_updateCloud',
+	    value: function _updateCloud(cloud, time) {
+	      if (cloud.x > -40) {
+	        cloud.x -= time.delta * cloud.speed;
+	      } else {
+	        cloud.x = 160;
+	        cloud.y = (0, _utils.randomBetween)(0, 120);
+	        cloud.speed = (0, _utils.randomBetween)(0.05, 0.2);
+	      }
 	    }
 	  }, {
-	    key: 'whatsHere',
-	    value: function whatsHere(offset) {
-	      var heights = [-100, 13, 29, 45, 61];
+	    key: 'update',
+	    value: function update(time, delta, ticks) {
+	      this.x -= time.delta * 0.1;
+	      for (var i = 0; i < this.clouds.length; i++) {
+	        this._updateCloud(this.clouds[i], time);
+	      }
+	    }
+	  }, {
+	    key: 'heightHere',
+	    value: function heightHere(offset) {
 	      var index = Math.floor((-this.x + offset) / this.tiles.mapTiles.tileWidth);
 	      var tile = this.stage[index];
-	      return { height: heights[tile] };
+	      return HEIGHTS[tile];
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render(graphics, ctx) {
-	      var _this2 = this;
+	      var _this = this;
 	
-	      var y = [128, 112, 96, 80, 68];
-	      var GROUND = 0;
-	      var COLUMN_ROOT = 1;
-	      var COLUMN_MID = 2;
-	      var COLUMN_TOP = 3;
-	      var PLATFORM = 9;
-	      var CLOUD_LEFT = 7;
-	      var CLOUD_RIGHT = 8;
 	      var leftmostTile = Math.floor(-this.x / this.tiles.mapTiles.tileWidth);
 	      var rightmostTile = leftmostTile + 10;
 	
-	      this.clouds.forEach(function (cloud) {
-	        graphics.drawTile(_this2.tiles.mapTiles, CLOUD_LEFT, 0, cloud.x, cloud.y, ctx);
-	        graphics.drawTile(_this2.tiles.mapTiles, CLOUD_RIGHT, 0, cloud.x + 16, cloud.y, ctx);
-	      });
+	      var cloud = void 0;
+	      for (var i = 0; i < this.clouds.length; i++) {
+	        cloud = this.clouds[i];
+	        graphics.drawTile(this.tiles.mapTiles, CLOUD_LEFT, 0, cloud.x, cloud.y, ctx);
+	        graphics.drawTile(this.tiles.mapTiles, CLOUD_RIGHT, 0, cloud.x + 16, cloud.y, ctx);
+	      };
 	
 	      this.stage.forEach(function (t, index) {
 	        if (index < leftmostTile || index > rightmostTile) {
 	          return;
 	        }
-	        var x = _this2.x + _this2.tiles.mapTiles.tileWidth * index;
+	        var x = _this.x + _this.tiles.mapTiles.tileWidth * index;
 	        switch (t) {
 	          case '0':
 	            break;
@@ -450,7 +461,7 @@
 	          case '2':
 	          case '3':
 	          case '4':
-	            graphics.drawTile(_this2.tiles.mapTiles, PLATFORM, 0, x, y[t - 1], ctx);
+	            graphics.drawTile(_this.tiles.mapTiles, PLATFORM, 0, x, Y_FROM_FLOOR[t - 1], ctx);
 	            break;
 	        }
 	      });

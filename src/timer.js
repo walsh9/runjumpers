@@ -1,7 +1,9 @@
 export default class Timer {
   constructor(game, timeStep) {
-    this.runTime = 0;
-    this.ticks = 0;
+    this.time = {};
+    this.time.runTime = 0;
+    this.time.ticks = 0;
+    this.time.delta = 0;
     this.started = false;
     this.timeStep = timeStep;
     this.game = game;
@@ -18,12 +20,12 @@ export default class Timer {
     let frameTime = newTime - this.currentTime;
     this.currentTime = newTime;
     while (frameTime > 0) {
-      var delta = Math.min(frameTime, this.timeStep);
-      frameTime -= delta;
-      this.runTime += delta;
-      this.game.update({delta, ticks: this.ticks, runTime: this.runTime});
+      this.time.delta = Math.min(frameTime, this.timeStep);
+      frameTime -= this.time.delta;
+      this.time.runTime += this.time.delta;
+      this.game.update(this.time);
     }
-    this.ticks++;
+    this.time.ticks++;
     this.game.render();
   }
 }
