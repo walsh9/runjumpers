@@ -7,9 +7,9 @@ export default class TitleScreen extends Screen {
   }
 
   render(graphics, ctx) {
-    graphics.clearScreen(ctx, '#b4a56a');
-    graphics.drawText(this.game.assets.Tiles.font, 'Runjumpers', 'center', 30, ctx);
-    graphics.drawText(this.game.assets.Tiles.font, 'Press z to start', 'center', 90, ctx);
+    // graphics.clearScreen(ctx, '#b4a56a');
+    graphics.drawTile(this.game.assets.panels.title, 0, 0, 0, 0, ctx);
+    graphics.drawText(this.game.assets.font, 'PRESS Z TO START', 'center', 90, ctx);
   }
 
   keydown(key) {

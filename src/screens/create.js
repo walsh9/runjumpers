@@ -8,7 +8,7 @@ export default class CreateScreen extends Screen {
     super(game);
     this.selection = 0;
     this.choices = ['rearHair', 'frontHair', 'face', 'body', 'next'];
-    this.character = new Character(this.game.assets.Tiles);
+    this.character = new Character(this.game.assets.tiles);
     this.blink = 0;
   }
 
@@ -18,17 +18,17 @@ export default class CreateScreen extends Screen {
 
   render(graphics, ctx) {
     graphics.clearScreen(ctx, '#b4a56a');
-    graphics.drawText(this.game.assets.Tiles.font, 'Create your Runjumper', 10, 10, ctx);
-    graphics.drawText(this.game.assets.Tiles.font, 'hair', 80, 30, ctx);
-    graphics.drawText(this.game.assets.Tiles.font, 'bangs', 80, 40, ctx);
-    graphics.drawText(this.game.assets.Tiles.font, 'face', 80, 50, ctx);
-    graphics.drawText(this.game.assets.Tiles.font, 'body', 80, 60, ctx);
-    graphics.drawText(this.game.assets.Tiles.font, 'RUN!', 80, 80, ctx);
+    graphics.drawText(this.game.assets.font, 'CREATE A NEW RUNJUMPER', 'center', 10, ctx);
+    graphics.drawText(this.game.assets.font, 'HAIR', 80, 40, ctx);
+    graphics.drawText(this.game.assets.font, 'BANGS', 80, 50, ctx);
+    graphics.drawText(this.game.assets.font, 'FACE', 80, 60, ctx);
+    graphics.drawText(this.game.assets.font, 'BODY', 80, 70, ctx);
+    graphics.drawText(this.game.assets.font, 'RUN!', 80, 90, ctx);
     if (this.selection < 4) {
-      graphics.drawText(this.game.assets.Tiles.font, '←      →', 70, this.selection * 10 + 30, ctx);
+      graphics.drawText(this.game.assets.font, '←      →', 70, this.selection * 10 + 40, ctx);
     }
     if (this.selection === 4 && this.blink) {
-      graphics.drawText(this.game.assets.Tiles.font, '[     ]', 70, 80, ctx);
+      graphics.drawText(this.game.assets.font, '[     ]', 70, 90, ctx);
     }
     this.character.render(graphics, ctx);
   }

@@ -91,14 +91,16 @@
 	var Gamestate = {};
 	Gamestate.ctx = document.querySelector('canvas').getContext('2d');
 	var Assets = {};
-	Assets.Tiles = {};
-	Promise.all([_graphics2.default.loadTileSet('i/ppl_rear_hair.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_body.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_face.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_front_hair.png', 27, 27), _graphics2.default.loadTileSet('i/misc.png', 16, 16), _graphics2.default.loadTileSet('i/font5x7.png', 5, 7)]).then(function (tilesets) {
-	  Assets.Tiles.rearHair = tilesets[0];
-	  Assets.Tiles.body = tilesets[1];
-	  Assets.Tiles.face = tilesets[2];
-	  Assets.Tiles.frontHair = tilesets[3];
-	  Assets.Tiles.mapTiles = tilesets[4];
-	  Assets.Tiles.font = tilesets[5];
+	Assets.tiles = {};
+	Assets.panels = {};
+	Promise.all([_graphics2.default.loadTileSet('i/ppl_rear_hair.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_body.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_face.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_front_hair.png', 27, 27), _graphics2.default.loadTileSet('i/misc.png', 16, 16), _graphics2.default.loadTileSet('i/font5x7.png', 5, 7), _graphics2.default.loadTileSet('i/logo.png', 160, 144)]).then(function (tilesets) {
+	  Assets.tiles.rearHair = tilesets[0];
+	  Assets.tiles.body = tilesets[1];
+	  Assets.tiles.face = tilesets[2];
+	  Assets.tiles.frontHair = tilesets[3];
+	  Assets.tiles.mapTiles = tilesets[4];
+	  Assets.font = tilesets[5];
+	  Assets.panels.title = tilesets[6];
 	  window.Game.assets = Assets;
 	  gameTimer.start();
 	});
@@ -500,9 +502,9 @@
 	  _createClass(TitleScreen, [{
 	    key: 'render',
 	    value: function render(graphics, ctx) {
-	      graphics.clearScreen(ctx, '#b4a56a');
-	      graphics.drawText(this.game.assets.Tiles.font, 'Runjumpers', 'center', 30, ctx);
-	      graphics.drawText(this.game.assets.Tiles.font, 'Press z to start', 'center', 90, ctx);
+	      // graphics.clearScreen(ctx, '#b4a56a');
+	      graphics.drawTile(this.game.assets.panels.title, 0, 0, 0, 0, ctx);
+	      graphics.drawText(this.game.assets.font, 'PRESS Z TO START', 'center', 90, ctx);
 	    }
 	  }, {
 	    key: 'keydown',
@@ -601,7 +603,7 @@
 	
 	    _this.selection = 0;
 	    _this.choices = ['rearHair', 'frontHair', 'face', 'body', 'next'];
-	    _this.character = new _character2.default(_this.game.assets.Tiles);
+	    _this.character = new _character2.default(_this.game.assets.tiles);
 	    _this.blink = 0;
 	    return _this;
 	  }
@@ -615,17 +617,17 @@
 	    key: 'render',
 	    value: function render(graphics, ctx) {
 	      graphics.clearScreen(ctx, '#b4a56a');
-	      graphics.drawText(this.game.assets.Tiles.font, 'Create your Runjumper', 10, 10, ctx);
-	      graphics.drawText(this.game.assets.Tiles.font, 'hair', 80, 30, ctx);
-	      graphics.drawText(this.game.assets.Tiles.font, 'bangs', 80, 40, ctx);
-	      graphics.drawText(this.game.assets.Tiles.font, 'face', 80, 50, ctx);
-	      graphics.drawText(this.game.assets.Tiles.font, 'body', 80, 60, ctx);
-	      graphics.drawText(this.game.assets.Tiles.font, 'RUN!', 80, 80, ctx);
+	      graphics.drawText(this.game.assets.font, 'CREATE A NEW RUNJUMPER', 'center', 10, ctx);
+	      graphics.drawText(this.game.assets.font, 'HAIR', 80, 40, ctx);
+	      graphics.drawText(this.game.assets.font, 'BANGS', 80, 50, ctx);
+	      graphics.drawText(this.game.assets.font, 'FACE', 80, 60, ctx);
+	      graphics.drawText(this.game.assets.font, 'BODY', 80, 70, ctx);
+	      graphics.drawText(this.game.assets.font, 'RUN!', 80, 90, ctx);
 	      if (this.selection < 4) {
-	        graphics.drawText(this.game.assets.Tiles.font, '←      →', 70, this.selection * 10 + 30, ctx);
+	        graphics.drawText(this.game.assets.font, '←      →', 70, this.selection * 10 + 40, ctx);
 	      }
 	      if (this.selection === 4 && this.blink) {
-	        graphics.drawText(this.game.assets.Tiles.font, '[     ]', 70, 80, ctx);
+	        graphics.drawText(this.game.assets.font, '[     ]', 70, 90, ctx);
 	      }
 	      this.character.render(graphics, ctx);
 	    }
@@ -734,7 +736,7 @@
 	
 	    var _this = _possibleConstructorReturn(this, (RunningScreen.__proto__ || Object.getPrototypeOf(RunningScreen)).call(this, game));
 	
-	    _this.map = new _map2.default(_this.game.assets.Tiles, map01);
+	    _this.map = new _map2.default(_this.game.assets.tiles, map01);
 	    _this.character = character;
 	    character.map = _this.map;
 	    return _this;

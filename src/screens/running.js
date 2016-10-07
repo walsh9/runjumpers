@@ -8,7 +8,7 @@ const map01 = "11111111000111111111111111111000222222222444444400000001111111111
 export default class RunningScreen extends Screen {
   constructor(game, character) {
     super(game);
-    this.map = new Map(this.game.assets.Tiles, map01);
+    this.map = new Map(this.game.assets.tiles, map01);
     this.character = character;
     character.map = this.map;
   }
