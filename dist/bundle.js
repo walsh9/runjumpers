@@ -149,8 +149,10 @@
 	};
 	
 	Graphics.drawTile = function (tileSet, tileX, tileY, x, y, ctx) {
-	  var tX = Math.floor(tileSet.tileWidth * tileX);
-	  var tY = Math.floor(tileSet.tileHeight * tileY);
+	  var tX = tileSet.tileWidth * tileX;
+	  var tY = tileSet.tileHeight * tileY;
+	  x = Math.floor(x);
+	  y = Math.floor(y);
 	  ctx.drawImage(tileSet.img, tX, tY, tileSet.tileWidth, tileSet.tileHeight, x, y, tileSet.tileWidth, tileSet.tileHeight);
 	};
 	
