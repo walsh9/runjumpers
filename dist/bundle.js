@@ -44,39 +44,69 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(1);
-	__webpack_require__(2);
-	__webpack_require__(3);
-	__webpack_require__(4);
-	__webpack_require__(5);
-	__webpack_require__(6);
-	__webpack_require__(7);
-	module.exports = __webpack_require__(8);
+	module.exports = __webpack_require__(1);
 
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	var _graphics = __webpack_require__(2);
+	
+	var _graphics2 = _interopRequireDefault(_graphics);
+	
+	var _character = __webpack_require__(3);
+	
+	var _character2 = _interopRequireDefault(_character);
+	
+	var _timer = __webpack_require__(5);
+	
+	var _timer2 = _interopRequireDefault(_timer);
+	
+	var _map = __webpack_require__(6);
+	
+	var _map2 = _interopRequireDefault(_map);
+	
+	var _title = __webpack_require__(7);
+	
+	var _title2 = _interopRequireDefault(_title);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	window.Game = {
+	  init: function init() {
+	    this.currentScreen = new _title2.default(this);
+	  },
+	  update: function update(time) {
+	    this.currentScreen.update(time);
+	  },
+	  render: function render() {
+	    this.currentScreen.render(_graphics2.default, Gamestate.ctx);
+	  }
+	};
+	var gameTimer = new _timer2.default(Game, 1 / 60);
+	
+	var Gamestate = {};
+	Gamestate.ctx = document.querySelector('canvas').getContext('2d');
+	var Assets = {};
+	Assets.Tiles = {};
+	Promise.all([_graphics2.default.loadTileSet('i/ppl_rear_hair.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_body.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_face.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_front_hair.png', 27, 27), _graphics2.default.loadTileSet('i/misc.png', 16, 16), _graphics2.default.loadTileSet('i/font5x7.png', 5, 7)]).then(function (tilesets) {
+	  Assets.Tiles.rearHair = tilesets[0];
+	  Assets.Tiles.body = tilesets[1];
+	  Assets.Tiles.face = tilesets[2];
+	  Assets.Tiles.frontHair = tilesets[3];
+	  Assets.Tiles.mapTiles = tilesets[4];
+	  Assets.Tiles.font = tilesets[5];
+	  window.Game.assets = Assets;
+	  gameTimer.start();
 	});
-	exports.mod = mod;
-	exports.randomInt = randomInt;
-	exports.near = near;
-	function mod(x, y) {
-	  return (x % y + y) % y;
-	}
 	
-	function randomInt(min, max) {
-	  return Math.floor(Math.random() * (max - min + 1)) + min;
-	}
-	
-	function near(num1, num2, threshold) {
-	  return Math.abs(num1 - num2) <= threshold;
-	}
+	window.addEventListener('keydown', function (event) {
+	  var key = event.key;
+	  Game.currentScreen.keydown(key, event);
+	});
 
 /***/ },
 /* 2 */
@@ -124,6 +154,20 @@
 	  ctx.drawImage(tileSet.img, tX, tY, tileSet.tileWidth, tileSet.tileHeight, x, y, tileSet.tileWidth, tileSet.tileHeight);
 	};
 	
+	Graphics.drawText = function (tileSet, text, x, y, ctx) {
+	  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .!?,\'":;_-+=/\\[]()#@%{}<>^*&~|→←↑↓○●$€¥'.split('');
+	  var self = this;
+	  if (x === 'center') {
+	    x = Math.floor((ctx.canvas.width - text.length * (tileSet.tileWidth + 1)) / 2);
+	  }
+	  text.split('').forEach(function (char, i) {
+	    var charIndex = chars.indexOf(char);
+	    var charX = x + i * (tileSet.tileWidth + 1);
+	    var charY = ['g', 'j', 'p', 'q', 'y'].indexOf(char) > -1 ? y + 2 : y;
+	    self.drawTile(tileSet, charIndex, 0, charX, charY, ctx);
+	  });
+	};
+	
 	exports.default = Graphics;
 
 /***/ },
@@ -138,7 +182,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _utils = __webpack_require__(1);
+	var _utils = __webpack_require__(4);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -202,7 +246,6 @@
 	  }, {
 	    key: 'jump',
 	    value: function jump() {
-	      console.log(this.pos, this.velocity);
 	      if (this.velocity.y === 0) {
 	        this.velocity.y = -0.24;
 	      }
@@ -233,182 +276,33 @@
 /* 4 */
 /***/ function(module, exports) {
 
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Map = function () {
-	  function Map(tiles, mapstring) {
-	    _classCallCheck(this, Map);
-	
-	    this.tiles = tiles;
-	    this.stage = mapstring.split('');
-	    this.x = 0;
-	  }
-	
-	  _createClass(Map, [{
-	    key: 'update',
-	    value: function update(time) {
-	      this.x -= time.delta * 0.1;
-	    }
-	  }, {
-	    key: 'whatsHere',
-	    value: function whatsHere(offset) {
-	      var heights = [-100, 13, 29, 45];
-	      var index = Math.floor((-this.x + offset) / this.tiles.mapTiles.tileWidth);
-	      var tile = this.stage[index];
-	      return { height: heights[tile] };
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(graphics, ctx) {
-	      var _this = this;
-	
-	      var y = [128, 112, 96, 80, 68];
-	      var GROUND = 0;
-	      var COLUMN_ROOT = 1;
-	      var COLUMN_MID = 2;
-	      var COLUMN_TOP = 3;
-	      var leftmostTile = Math.floor(-this.x / this.tiles.mapTiles.tileWidth);
-	      var rightmostTile = leftmostTile + 10;
-	      var visibleTiles = this.stage.slice(leftmostTile, rightmostTile);
-	      this.stage.forEach(function (t, index) {
-	        if (index < leftmostTile || index > rightmostTile) {
-	          return;
-	        }
-	        var x = _this.x + _this.tiles.mapTiles.tileWidth * index;
-	        switch (t) {
-	          case '0':
-	            break;
-	          case '1':
-	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_TOP, 0, x, y[0], ctx);
-	            break;
-	          case '2':
-	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_MID, 0, x, y[0], ctx);
-	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_TOP, 0, x, y[1], ctx);
-	            break;
-	          case '3':
-	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_MID, 0, x, y[0], ctx);
-	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_MID, 0, x, y[1], ctx);
-	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_TOP, 0, x, y[2], ctx);
-	            break;
-	        }
-	      });
-	    }
-	  }]);
-	
-	  return Map;
-	}();
-	
-	exports.default = Map;
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
 	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.mod = mod;
+	exports.randomInt = randomInt;
+	exports.randomBetween = randomBetween;
+	exports.near = near;
+	function mod(x, y) {
+	  return (x % y + y) % y;
+	}
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	function randomInt(min, max) {
+	  return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function randomBetween(min, max) {
+	  return Math.random() * (max - min) + min;
+	}
 	
-	var Screen = function () {
-	  function Screen(game) {
-	    _classCallCheck(this, Screen);
-	
-	    this.game = game;
-	  }
-	
-	  _createClass(Screen, [{
-	    key: "update",
-	    value: function update() {}
-	  }, {
-	    key: "render",
-	    value: function render() {}
-	  }, {
-	    key: "keydown",
-	    value: function keydown() {}
-	  }]);
-	
-	  return Screen;
-	}();
-	
-	exports.default = Screen;
+	function near(num1, num2, threshold) {
+	  return Math.abs(num1 - num2) <= threshold;
+	}
 
 /***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _screen = __webpack_require__(5);
-	
-	var _screen2 = _interopRequireDefault(_screen);
-	
-	var _create = __webpack_require__(10);
-	
-	var _create2 = _interopRequireDefault(_create);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var TitleScreen = function (_Screen) {
-	  _inherits(TitleScreen, _Screen);
-	
-	  function TitleScreen(game) {
-	    _classCallCheck(this, TitleScreen);
-	
-	    return _possibleConstructorReturn(this, (TitleScreen.__proto__ || Object.getPrototypeOf(TitleScreen)).call(this, game));
-	  }
-	
-	  _createClass(TitleScreen, [{
-	    key: 'render',
-	    value: function render(graphics, ctx) {
-	      graphics.clearScreen(ctx, '#b4a56a');
-	      ctx.strokeStyle = "#ffffff";
-	      ctx.strokeText('runjumpers', 30, 30);
-	      ctx.strokeText('press z to start', 30, 90);
-	    }
-	  }, {
-	    key: 'keydown',
-	    value: function keydown(key) {
-	      switch (key) {
-	        case 'z':
-	          console.log('good');
-	          this.game.currentScreen = new _create2.default(this.game);
-	          break;
-	      }
-	    }
-	  }]);
-	
-	  return TitleScreen;
-	}(_screen2.default);
-	
-	exports.default = TitleScreen;
-
-/***/ },
-/* 7 */
+/* 5 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -461,64 +355,205 @@
 	exports.default = Timer;
 
 /***/ },
-/* 8 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _graphics = __webpack_require__(2);
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	
-	var _graphics2 = _interopRequireDefault(_graphics);
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _character = __webpack_require__(3);
+	var _utils = __webpack_require__(4);
 	
-	var _character2 = _interopRequireDefault(_character);
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var _timer = __webpack_require__(7);
+	var Map = function () {
+	  function Map(tiles, mapstring) {
+	    _classCallCheck(this, Map);
 	
-	var _timer2 = _interopRequireDefault(_timer);
+	    this.tiles = tiles;
+	    this.stage = mapstring.split('');
+	    this.x = 0;
+	    this.clouds = [];
+	    for (var c = 0; c < 20; c++) {
+	      this.clouds.push(this._randomCloud());
+	    }
+	  }
 	
-	var _map = __webpack_require__(4);
+	  _createClass(Map, [{
+	    key: '_randomCloud',
+	    value: function _randomCloud() {
+	      return { x: (0, _utils.randomBetween)(-6, 160), y: (0, _utils.randomBetween)(0, 120), speed: (0, _utils.randomBetween)(0.05, 0.2) };
+	    }
+	  }, {
+	    key: 'update',
+	    value: function update(time) {
+	      var _this = this;
 	
-	var _map2 = _interopRequireDefault(_map);
+	      this.x -= time.delta * 0.1;
 	
-	var _title = __webpack_require__(6);
+	      this.clouds.forEach(function (cloud) {
+	        if (cloud.x > -40) {
+	          cloud.x -= time.delta * cloud.speed;
+	        } else {
+	          cloud.x = 160;
+	          cloud.y = _this._randomCloud().y;
+	          cloud.speed = _this._randomCloud().speed;
+	        }
+	      });
+	    }
+	  }, {
+	    key: 'whatsHere',
+	    value: function whatsHere(offset) {
+	      var heights = [-100, 13, 29, 45, 61];
+	      var index = Math.floor((-this.x + offset) / this.tiles.mapTiles.tileWidth);
+	      var tile = this.stage[index];
+	      return { height: heights[tile] };
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(graphics, ctx) {
+	      var _this2 = this;
 	
-	var _title2 = _interopRequireDefault(_title);
+	      var y = [128, 112, 96, 80, 68];
+	      var GROUND = 0;
+	      var COLUMN_ROOT = 1;
+	      var COLUMN_MID = 2;
+	      var COLUMN_TOP = 3;
+	      var PLATFORM = 9;
+	      var CLOUD_LEFT = 7;
+	      var CLOUD_RIGHT = 8;
+	      var leftmostTile = Math.floor(-this.x / this.tiles.mapTiles.tileWidth);
+	      var rightmostTile = leftmostTile + 10;
+	
+	      this.clouds.forEach(function (cloud) {
+	        graphics.drawTile(_this2.tiles.mapTiles, CLOUD_LEFT, 0, cloud.x, cloud.y, ctx);
+	        graphics.drawTile(_this2.tiles.mapTiles, CLOUD_RIGHT, 0, cloud.x + 16, cloud.y, ctx);
+	      });
+	
+	      this.stage.forEach(function (t, index) {
+	        if (index < leftmostTile || index > rightmostTile) {
+	          return;
+	        }
+	        var x = _this2.x + _this2.tiles.mapTiles.tileWidth * index;
+	        switch (t) {
+	          case '0':
+	            break;
+	          case '1':
+	          case '2':
+	          case '3':
+	          case '4':
+	            graphics.drawTile(_this2.tiles.mapTiles, PLATFORM, 0, x, y[t - 1], ctx);
+	            break;
+	        }
+	      });
+	    }
+	  }]);
+	
+	  return Map;
+	}();
+	
+	exports.default = Map;
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _screen = __webpack_require__(8);
+	
+	var _screen2 = _interopRequireDefault(_screen);
+	
+	var _create = __webpack_require__(9);
+	
+	var _create2 = _interopRequireDefault(_create);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	window.Game = {
-	  init: function init() {
-	    this.currentScreen = new _title2.default(this);
-	  },
-	  update: function update(time) {
-	    this.currentScreen.update(time);
-	  },
-	  render: function render() {
-	    this.currentScreen.render(_graphics2.default, Gamestate.ctx);
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var TitleScreen = function (_Screen) {
+	  _inherits(TitleScreen, _Screen);
+	
+	  function TitleScreen(game) {
+	    _classCallCheck(this, TitleScreen);
+	
+	    return _possibleConstructorReturn(this, (TitleScreen.__proto__ || Object.getPrototypeOf(TitleScreen)).call(this, game));
 	  }
-	};
-	var gameTimer = new _timer2.default(Game, 1 / 60);
 	
-	var Gamestate = {};
-	Gamestate.ctx = document.querySelector('canvas').getContext('2d');
-	var Assets = {};
-	Assets.Tiles = {};
-	Promise.all([_graphics2.default.loadTileSet('i/ppl_rear_hair.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_body.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_face.png', 27, 27), _graphics2.default.loadTileSet('i/ppl_front_hair.png', 27, 27), _graphics2.default.loadTileSet('i/misc.png', 16, 16)]).then(function (tilesets) {
-	  Assets.Tiles.rearHair = tilesets[0];
-	  Assets.Tiles.body = tilesets[1];
-	  Assets.Tiles.face = tilesets[2];
-	  Assets.Tiles.frontHair = tilesets[3];
-	  Assets.Tiles.mapTiles = tilesets[4];
-	  window.Game.assets = Assets;
-	  gameTimer.start();
+	  _createClass(TitleScreen, [{
+	    key: 'render',
+	    value: function render(graphics, ctx) {
+	      graphics.clearScreen(ctx, '#b4a56a');
+	      graphics.drawText(this.game.assets.Tiles.font, 'Runjumpers', 'center', 30, ctx);
+	      graphics.drawText(this.game.assets.Tiles.font, 'Press z to start', 'center', 90, ctx);
+	    }
+	  }, {
+	    key: 'keydown',
+	    value: function keydown(key) {
+	      switch (key) {
+	        case 'z':
+	          this.game.currentScreen = new _create2.default(this.game);
+	          break;
+	      }
+	    }
+	  }]);
+	
+	  return TitleScreen;
+	}(_screen2.default);
+	
+	exports.default = TitleScreen;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
 	});
 	
-	window.addEventListener('keydown', function (event) {
-	  var key = event.key;
-	  Game.currentScreen.keydown(key, event);
-	});
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Screen = function () {
+	  function Screen(game) {
+	    _classCallCheck(this, Screen);
+	
+	    this.game = game;
+	  }
+	
+	  _createClass(Screen, [{
+	    key: "update",
+	    value: function update() {}
+	  }, {
+	    key: "render",
+	    value: function render() {}
+	  }, {
+	    key: "keydown",
+	    value: function keydown() {}
+	  }]);
+	
+	  return Screen;
+	}();
+	
+	exports.default = Screen;
 
 /***/ },
 /* 9 */
@@ -532,89 +567,13 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _screen = __webpack_require__(5);
+	var _screen = __webpack_require__(8);
 	
 	var _screen2 = _interopRequireDefault(_screen);
 	
-	var _map = __webpack_require__(4);
+	var _utils = __webpack_require__(4);
 	
-	var _map2 = _interopRequireDefault(_map);
-	
-	var _character = __webpack_require__(3);
-	
-	var _character2 = _interopRequireDefault(_character);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var map01 = "1121111111111211111000110111211131123111111113111110011011111000011111111113331111110000000000000000000";
-	
-	var RunningScreen = function (_Screen) {
-	  _inherits(RunningScreen, _Screen);
-	
-	  function RunningScreen(game, character) {
-	    _classCallCheck(this, RunningScreen);
-	
-	    var _this = _possibleConstructorReturn(this, (RunningScreen.__proto__ || Object.getPrototypeOf(RunningScreen)).call(this, game));
-	
-	    _this.map = new _map2.default(_this.game.assets.Tiles, map01);
-	    _this.character = character;
-	    character.map = _this.map;
-	    return _this;
-	  }
-	
-	  _createClass(RunningScreen, [{
-	    key: 'update',
-	    value: function update(time) {
-	      this.map.update(time);
-	      this.character.update(time);
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(graphics, ctx) {
-	      graphics.clearScreen(ctx, '#b4a56a');
-	      this.map.render(graphics, ctx);
-	      this.character.render(graphics, ctx);
-	    }
-	  }, {
-	    key: 'keydown',
-	    value: function keydown(key) {
-	      switch (key) {
-	        case 'z':
-	          this.character.jump();
-	      }
-	    }
-	  }]);
-	
-	  return RunningScreen;
-	}(_screen2.default);
-	
-	exports.default = RunningScreen;
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _screen = __webpack_require__(5);
-	
-	var _screen2 = _interopRequireDefault(_screen);
-	
-	var _utils = __webpack_require__(1);
-	
-	var _running = __webpack_require__(9);
+	var _running = __webpack_require__(10);
 	
 	var _running2 = _interopRequireDefault(_running);
 	
@@ -654,18 +613,17 @@
 	    key: 'render',
 	    value: function render(graphics, ctx) {
 	      graphics.clearScreen(ctx, '#b4a56a');
-	      ctx.strokeStyle = "#ffffff";
-	      ctx.strokeText('Create your Runjumper', 10, 10);
-	      ctx.strokeText('hair', 80, 30);
-	      ctx.strokeText('front', 80, 40);
-	      ctx.strokeText('face', 80, 50);
-	      ctx.strokeText('body', 80, 60);
-	      ctx.strokeText('GO!', 80, 80);
+	      graphics.drawText(this.game.assets.Tiles.font, 'Create your Runjumper', 10, 10, ctx);
+	      graphics.drawText(this.game.assets.Tiles.font, 'hair', 80, 30, ctx);
+	      graphics.drawText(this.game.assets.Tiles.font, 'bangs', 80, 40, ctx);
+	      graphics.drawText(this.game.assets.Tiles.font, 'face', 80, 50, ctx);
+	      graphics.drawText(this.game.assets.Tiles.font, 'body', 80, 60, ctx);
+	      graphics.drawText(this.game.assets.Tiles.font, 'RUN!', 80, 80, ctx);
 	      if (this.selection < 4) {
-	        ctx.strokeText('<               >', 70, this.selection * 10 + 30);
+	        graphics.drawText(this.game.assets.Tiles.font, '←      →', 70, this.selection * 10 + 30, ctx);
 	      }
 	      if (this.selection === 4 && this.blink) {
-	        ctx.strokeText('[              ]', 70, 80);
+	        graphics.drawText(this.game.assets.Tiles.font, '[     ]', 70, 80, ctx);
 	      }
 	      this.character.render(graphics, ctx);
 	    }
@@ -684,7 +642,7 @@
 	  }, {
 	    key: 'selectDown',
 	    value: function selectDown() {
-	      this.selection = Math.min(this.selection + 1, this.choices.length);
+	      this.selection = Math.min(this.selection + 1, this.choices.length - 1);
 	    }
 	  }, {
 	    key: 'setLeft',
@@ -731,6 +689,82 @@
 	}(_screen2.default);
 	
 	exports.default = CreateScreen;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _screen = __webpack_require__(8);
+	
+	var _screen2 = _interopRequireDefault(_screen);
+	
+	var _map = __webpack_require__(6);
+	
+	var _map2 = _interopRequireDefault(_map);
+	
+	var _character = __webpack_require__(3);
+	
+	var _character2 = _interopRequireDefault(_character);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var map01 = "111111110001111111111111111110002222222224444444000000011111111111111113311331133111111122211113333332222222224444444440000011111";
+	
+	var RunningScreen = function (_Screen) {
+	  _inherits(RunningScreen, _Screen);
+	
+	  function RunningScreen(game, character) {
+	    _classCallCheck(this, RunningScreen);
+	
+	    var _this = _possibleConstructorReturn(this, (RunningScreen.__proto__ || Object.getPrototypeOf(RunningScreen)).call(this, game));
+	
+	    _this.map = new _map2.default(_this.game.assets.Tiles, map01);
+	    _this.character = character;
+	    character.map = _this.map;
+	    return _this;
+	  }
+	
+	  _createClass(RunningScreen, [{
+	    key: 'update',
+	    value: function update(time) {
+	      this.map.update(time);
+	      this.character.update(time);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(graphics, ctx) {
+	      graphics.clearScreen(ctx, '#b4a56a');
+	      this.map.render(graphics, ctx);
+	      this.character.render(graphics, ctx);
+	    }
+	  }, {
+	    key: 'keydown',
+	    value: function keydown(key) {
+	      switch (key) {
+	        case 'z':
+	          this.character.jump();
+	      }
+	    }
+	  }]);
+	
+	  return RunningScreen;
+	}(_screen2.default);
+	
+	exports.default = RunningScreen;
 
 /***/ }
 /******/ ]);

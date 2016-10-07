@@ -8,15 +8,13 @@ export default class TitleScreen extends Screen {
 
   render(graphics, ctx) {
     graphics.clearScreen(ctx, '#b4a56a');
-    ctx.strokeStyle = "#ffffff";
-    ctx.strokeText('runjumpers', 30, 30);
-    ctx.strokeText('press z to start', 30, 90);
+    graphics.drawText(this.game.assets.Tiles.font, 'Runjumpers', 'center', 30, ctx);
+    graphics.drawText(this.game.assets.Tiles.font, 'Press z to start', 'center', 90, ctx);
   }
 
   keydown(key) {
     switch(key) {
     case 'z':
-      console.log('good');
       this.game.currentScreen = new CreateScreen(this.game);
       break;
     }

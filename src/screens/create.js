@@ -18,18 +18,17 @@ export default class CreateScreen extends Screen {
 
   render(graphics, ctx) {
     graphics.clearScreen(ctx, '#b4a56a');
-    ctx.strokeStyle = "#ffffff";
-    ctx.strokeText('Create your Runjumper', 10, 10);
-    ctx.strokeText('hair', 80, 30);
-    ctx.strokeText('front', 80, 40);
-    ctx.strokeText('face', 80, 50);
-    ctx.strokeText('body', 80, 60);
-    ctx.strokeText('GO!', 80, 80);
+    graphics.drawText(this.game.assets.Tiles.font, 'Create your Runjumper', 10, 10, ctx);
+    graphics.drawText(this.game.assets.Tiles.font, 'hair', 80, 30, ctx);
+    graphics.drawText(this.game.assets.Tiles.font, 'bangs', 80, 40, ctx);
+    graphics.drawText(this.game.assets.Tiles.font, 'face', 80, 50, ctx);
+    graphics.drawText(this.game.assets.Tiles.font, 'body', 80, 60, ctx);
+    graphics.drawText(this.game.assets.Tiles.font, 'RUN!', 80, 80, ctx);
     if (this.selection < 4) {
-      ctx.strokeText('<               >', 70, this.selection * 10 + 30);
+      graphics.drawText(this.game.assets.Tiles.font, '←      →', 70, this.selection * 10 + 30, ctx);
     }
     if (this.selection === 4 && this.blink) {
-      ctx.strokeText('[              ]', 70, 80);
+      graphics.drawText(this.game.assets.Tiles.font, '[     ]', 70, 80, ctx);
     }
     this.character.render(graphics, ctx);
   }
@@ -45,7 +44,7 @@ export default class CreateScreen extends Screen {
   }
 
   selectDown() {
-    this.selection = Math.min(this.selection + 1, this.choices.length);
+    this.selection = Math.min(this.selection + 1, this.choices.length - 1);
   }
 
   setLeft() {

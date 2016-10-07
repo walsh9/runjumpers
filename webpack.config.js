@@ -2,7 +2,8 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-  context: path.join(__dirname, 'src'),
+  context: path.join(__dirname, './src'),
+  entry: ['./game.js'],
   include: [
     './utils.js',
     './graphics.js',
@@ -15,7 +16,7 @@ module.exports = {
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
+    filename: 'bundle.js'
   },
   resolveLoader: {
     root: path.join(__dirname, 'node_modules')
@@ -27,7 +28,7 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         query: {
-          presets: ["es2015"],
+          presets: ["es2015"]
         }
       }
     ]
@@ -41,5 +42,5 @@ module.exports = {
       // Nice colored output
       colors: true
   },
-  debug: true,
+  debug: true
 };

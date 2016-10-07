@@ -6,6 +6,11 @@ export function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+export function randomBetween(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
 export function near(num1, num2, threshold) {
   return Math.abs(num1 - num2) <= threshold;
 }
+

@@ -26,13 +26,15 @@ Promise.all([
   Graphics.loadTileSet('i/ppl_body.png', 27, 27),
   Graphics.loadTileSet('i/ppl_face.png', 27, 27),
   Graphics.loadTileSet('i/ppl_front_hair.png', 27, 27),
-  Graphics.loadTileSet('i/misc.png', 16, 16)
+  Graphics.loadTileSet('i/misc.png', 16, 16),
+  Graphics.loadTileSet('i/font5x7.png', 5, 7)
 ]).then(function(tilesets) {
   Assets.Tiles.rearHair = tilesets[0];
   Assets.Tiles.body = tilesets[1];
   Assets.Tiles.face = tilesets[2];
   Assets.Tiles.frontHair = tilesets[3];
   Assets.Tiles.mapTiles = tilesets[4];
+  Assets.Tiles.font = tilesets[5];
   window.Game.assets = Assets;
   gameTimer.start();
 });

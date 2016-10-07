@@ -54,7 +54,6 @@ export default class Character {
   }
 
   jump() {
-    console.log(this.pos, this.velocity);
     if (this.velocity.y === 0) {
       this.velocity.y = -0.24;
     }

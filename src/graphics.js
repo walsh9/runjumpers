@@ -37,4 +37,18 @@ Graphics.drawTile = function(tileSet, tileX, tileY, x, y, ctx) {
     x,  y,  tileSet.tileWidth, tileSet.tileHeight);
 };
 
+Graphics.drawText = function(tileSet, text, x, y, ctx) {
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .!?,\'":;_-+=/\\[]()#@%{}<>^*&~|→←↑↓○●$€¥'.split('');
+  var self = this;
+  if (x === 'center') {
+    x = Math.floor((ctx.canvas.width - text.length * (tileSet.tileWidth + 1)) / 2);
+  }
+  text.split('').forEach(function(char, i) {
+    let charIndex = chars.indexOf(char);
+    let charX = x + i * (tileSet.tileWidth + 1);
+    let charY = ['g', 'j', 'p', 'q', 'y'].indexOf(char) > -1 ? y + 2 : y;
+    self.drawTile(tileSet, charIndex, 0, charX, charY, ctx);
+  });
+};
+
 export default Graphics;
