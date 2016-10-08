@@ -42,8 +42,8 @@ export default class Map {
     let rightmostTile = leftmostTile + 10;
 
     if (this.bg) {
-      graphics.draw(this.bg2.canvas, this.x * this.bg2.parallaxFactor, 0);
-      graphics.draw(this.bg1.canvas, this.x * this.bg1.parallaxFactor, 0);
+      graphics.draw(this.bg2.canvas, Math.floor(this.x * this.bg2.parallaxFactor), 0);
+      graphics.draw(this.bg1.canvas, Math.floor(this.x * this.bg1.parallaxFactor), 0);
     }
 
     this.stage.forEach((t, index) => {
