@@ -258,6 +258,13 @@
 	      }
 	    }
 	  }, {
+	    key: 'hop',
+	    value: function hop() {
+	      if (this.velocity.y === 0) {
+	        this.velocity.y = -0.12;
+	      }
+	    }
+	  }, {
 	    key: 'randomizeParts',
 	    value: function randomizeParts() {
 	      this.setRandomPart('rearHair');
@@ -822,6 +829,10 @@
 	      switch (key) {
 	        case 'z':
 	          this.character.jump();
+	          break;
+	        case 'x':
+	          this.character.hop();
+	          break;
 	      }
 	    }
 	  }]);

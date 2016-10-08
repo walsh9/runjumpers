@@ -58,6 +58,12 @@ export default class Character {
     }
   }
 
+  hop() {
+    if (this.velocity.y === 0) {
+      this.velocity.y = -0.12;
+    }
+  }
+
   randomizeParts() {
     this.setRandomPart('rearHair');
     this.setRandomPart('face');

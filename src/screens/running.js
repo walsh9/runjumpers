@@ -27,6 +27,10 @@ export default class RunningScreen extends Screen {
     switch(key) {
     case 'z':
       this.character.jump();
+      break;
+    case 'x':
+      this.character.hop();
+      break;
     }
   }
 }
