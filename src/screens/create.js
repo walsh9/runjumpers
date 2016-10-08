@@ -16,21 +16,21 @@ export default class CreateScreen extends Screen {
     this.blink = time.ticks % 10 > 5;
   }
 
-  render(graphics, ctx) {
-    graphics.clearScreen(ctx, '#b4a56a');
-    graphics.drawText(this.game.assets.font, 'CREATE A NEW RUNJUMPER', 'center', 10, ctx);
-    graphics.drawText(this.game.assets.font, 'HAIR', 80, 40, ctx);
-    graphics.drawText(this.game.assets.font, 'BANGS', 80, 50, ctx);
-    graphics.drawText(this.game.assets.font, 'FACE', 80, 60, ctx);
-    graphics.drawText(this.game.assets.font, 'BODY', 80, 70, ctx);
-    graphics.drawText(this.game.assets.font, 'RUN!', 80, 90, ctx);
+  render(graphics) {
+    graphics.clearScreen('#b4a56a');
+    graphics.drawText('CREATE A NEW RUNJUMPER', 'center', 10);
+    graphics.drawText('HAIR', 80, 40);
+    graphics.drawText('BANGS', 80, 50);
+    graphics.drawText('FACE', 80, 60);
+    graphics.drawText('BODY', 80, 70);
+    graphics.drawText('RUN!', 80, 90);
     if (this.selection < 4) {
-      graphics.drawText(this.game.assets.font, '←      →', 70, this.selection * 10 + 40, ctx);
+      graphics.drawText('←      →', 70, this.selection * 10 + 40);
     }
     if (this.selection === 4 && this.blink) {
-      graphics.drawText(this.game.assets.font, '[     ]', 70, 90, ctx);
+      graphics.drawText('[     ]', 70, 90);
     }
-    this.character.render(graphics, ctx);
+    this.character.render(graphics);
   }
 
   nextScreen() {

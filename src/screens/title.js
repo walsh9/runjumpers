@@ -7,9 +7,9 @@ import { randomInt } from '../utils';
 export default class TitleScreen extends Screen {
   constructor(game) {
     super(game);
-    this.map = new Map({tiles: this.game.assets.tiles, mapstring: "111111111111", scrollSpeed: 0, bg: false});
+    this.map = new Map({assets: this.game.assets, mapstring: "111111111111", scrollSpeed: 0, bg: false});
     this.map.x = -27;
-    this.character = new Character({tiles: this.game.assets.tiles, runSpeed: 0.1});
+    this.character = new Character({tiles: this.tiles, runSpeed: 0.1});
     this.character.pos.y = 104;
     this.character.pos.x = -27;
     this.character.map = this.map;
@@ -29,16 +29,16 @@ export default class TitleScreen extends Screen {
       this.character.jump();
       this.nextJump = time.runTime + randomInt(500, 2000);
     }
-
   }
 
-  render(graphics, ctx) {
-    graphics.drawTile(this.game.assets.panels.title, 0, 0, 0, 0, ctx);
+  render(graphics) {
+    graphics.clearScreen('#b4a56a');
+    graphics.drawGraphic(this.graphics.title, 0, 0);
     if (this.blink) {
-      graphics.drawText(this.game.assets.font, 'PRESS Z TO START', 'center', 90, ctx);
+      graphics.drawText('PRESS Z TO START', 'center', 90);
     }
-    this.map.render(graphics, ctx);
-    this.character.render(graphics, ctx);
+    this.map.render(graphics);
+    this.character.render(graphics);
   }
 
   keydown(key) {

@@ -2,12 +2,12 @@ import Screen from '../screen';
 import Map from '../map';
 import Character from '../character';
 
-const map01 = "111111110001111111111111111110002222222224444444000000011111111111111113311331133111111122211113333332222222224444444440000011111";
+const map01 = "11111111000111111111111111111000222222222444444400000011111111111111113311331133111111122211113333332222222224444444440000011111";
 
 export default class RunningScreen extends Screen {
   constructor(game, character) {
     super(game);
-    this.map = new Map({tiles: this.game.assets.tiles, mapstring: map01, scrollSpeed: -0.1, bg: false});
+    this.map = new Map({assets: this.game.assets, mapstring: map01, scrollSpeed: -0.1, bg: true});
     this.character = character;
     this.character.map = this.map;
   }
@@ -17,10 +17,10 @@ export default class RunningScreen extends Screen {
     this.character.update(time);
   }
 
-  render(graphics, ctx) {
-    graphics.clearScreen(ctx, '#b4a56a');
-    this.map.render(graphics, ctx);
-    this.character.render(graphics, ctx);
+  render(graphics) {
+    graphics.clearScreen('#e6d69c');
+    this.map.render(graphics);
+    this.character.render(graphics);
   }
 
   keydown(key) {

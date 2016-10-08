@@ -37,7 +37,7 @@ export default class Character {
     this.runFrame = (time.ticks % 6) < 3 ? 1 : 2;
   }
 
-  render(graphics, ctx) {
+  render(graphics) {
     let animFrame = 0;
     if (this.state === 'running') {
       animFrame = this.runFrame;
@@ -46,10 +46,10 @@ export default class Character {
     } else if (this.state === 'falling') {
       animFrame = 0;
     }
-    graphics.drawTile(this.tiles.rearHair, this.parts.rearHair, 0, this.pos.x, this.pos.y, ctx);
-    graphics.drawTile(this.tiles.body, this.parts.body, animFrame, this.pos.x, this.pos.y, ctx);
-    graphics.drawTile(this.tiles.face, this.parts.face, 0, this.pos.x, this.pos.y, ctx);
-    graphics.drawTile(this.tiles.frontHair, this.parts.frontHair, 0, this.pos.x, this.pos.y, ctx);
+    graphics.drawTile(this.tiles.rearHair, this.parts.rearHair, 0, this.pos.x, this.pos.y);
+    graphics.drawTile(this.tiles.body, this.parts.body, animFrame, this.pos.x, this.pos.y);
+    graphics.drawTile(this.tiles.face, this.parts.face, 0, this.pos.x, this.pos.y);
+    graphics.drawTile(this.tiles.frontHair, this.parts.frontHair, 0, this.pos.x, this.pos.y);
   }
 
   jump() {

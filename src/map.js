@@ -1,4 +1,4 @@
-import { randomBetween } from './utils';
+import { randomInt, randomBetween, shuffle } from './utils';
 const Y_FROM_FLOOR = [128, 112, 96, 80, 68];
 const GROUND = 0;
 const COLUMN_ROOT = 1;
@@ -11,28 +11,18 @@ const HEIGHTS = [-100, 13, 29, 45, 61];
 
 export default class Map {
   constructor(params) {
-    this.tiles = params.tiles;
+    this.tiles = params.assets.tiles;
+    this.graphics = params.assets.graphics;
     this.stage = params.mapstring.split('');
+    this.stageWidth = this.stage.length  * this.tiles.mapTiles.tileWidth;
     this.scrollSpeed = params.scrollSpeed;
     this.bg = params.bg;
     this.x = 0;
     this.clouds = [];
     if (this.bg) {
-      for (let c = 0; c < 20; c++) {
-        this.clouds.push(this._randomCloud());
-      }
-    }
-  }
-  _randomCloud() {
-    return {x: randomBetween(-6, 160), y: randomBetween(0, 120), speed: randomBetween(0.05, 0.2)};
-  }
-  _updateCloud(cloud, time) {
-    if (cloud.x > -40) {
-      cloud.x -= time.delta * cloud.speed;
-    } else {
-      cloud.x = 160;
-      cloud.y = randomBetween(0, 120);
-      cloud.speed = randomBetween(0.05, 0.2);
+      let bgSlices = shuffle([1,2,3,4,5,6,7,8,9,10]);
+      this.bg1 = this.createBg('Dark', 15, 0.4, bgSlices.slice(0,5));
+      this.bg2 = this.createBg('Light', 20, 0.3, bgSlices.slice(5));
     }
   }
   update(time, delta, ticks) {
@@ -47,16 +37,14 @@ export default class Map {
     let tile = this.stage[index];
     return HEIGHTS[tile];
   }
-  render(graphics, ctx) {
+  render(graphics) {
     let leftmostTile = Math.floor((-this.x) / this.tiles.mapTiles.tileWidth);
     let rightmostTile = leftmostTile + 10;
 
-    let cloud;
-    for(let i = 0; i < this.clouds.length; i++) {
-      cloud = this. clouds[i];
-      graphics.drawTile(this.tiles.mapTiles, CLOUD_LEFT, 0, cloud.x, cloud.y, ctx);
-      graphics.drawTile(this.tiles.mapTiles, CLOUD_RIGHT, 0, cloud.x + 16, cloud.y, ctx);
-    };
+    if (this.bg) {
+      graphics.draw(this.bg2.canvas, this.x * this.bg2.parallaxFactor, 0);
+      graphics.draw(this.bg1.canvas, this.x * this.bg1.parallaxFactor, 0);
+    }
 
     this.stage.forEach((t, index) => {
       if (index < leftmostTile || index > rightmostTile) {
@@ -70,9 +58,38 @@ export default class Map {
       case '2':
       case '3':
       case '4':
-        graphics.drawTile(this.tiles.mapTiles, PLATFORM, 0, x, Y_FROM_FLOOR[t - 1], ctx);
+        graphics.drawTile(this.tiles.mapTiles, PLATFORM, 0, x, Y_FROM_FLOOR[t - 1]);
         break;
       }
     });
   }
+  createBg(variant, spacing, parallaxFactor, availableSlices) {
+    let minWidth = Math.floor(this.stageWidth * parallaxFactor);
+    let w = 0;
+    let possibleSlices = [];
+    let slices = [];
+    while (w < minWidth) {
+      if (possibleSlices.length === 0) {
+        possibleSlices = shuffle(availableSlices.slice());
+      }
+      let sliceId = possibleSlices.pop();
+      let slice = this.graphics[`bg${variant}${sliceId}`];
+      slices.push(slice);
+      w += slice.width + spacing;
+    }
+
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext('2d');
+    canvas.width = w;
+    canvas.height = 144;
+    let x = 0;
+    slices.forEach(slice => {
+      let y = randomInt(0, 2);
+      ctx.drawImage(slice.img, x, y * 12);
+      x += slice.width + spacing;
+    });
+    return {canvas, parallaxFactor};
+  }
+
+
 }
