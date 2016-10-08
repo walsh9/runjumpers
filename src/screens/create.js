@@ -8,7 +8,7 @@ export default class CreateScreen extends Screen {
     super(game);
     this.selection = 0;
     this.choices = ['rearHair', 'frontHair', 'face', 'body', 'next'];
-    this.character = new Character(this.game.assets.tiles);
+    this.character = new Character({tiles: this.game.assets.tiles, runSpeed: 0});
     this.blink = 0;
   }
 

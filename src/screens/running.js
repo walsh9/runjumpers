@@ -4,13 +4,12 @@ import Character from '../character';
 
 const map01 = "111111110001111111111111111110002222222224444444000000011111111111111113311331133111111122211113333332222222224444444440000011111";
 
-
 export default class RunningScreen extends Screen {
   constructor(game, character) {
     super(game);
-    this.map = new Map(this.game.assets.tiles, map01);
+    this.map = new Map({tiles: this.game.assets.tiles, mapstring: map01, scrollSpeed: -0.1, bg: false});
     this.character = character;
-    character.map = this.map;
+    this.character.map = this.map;
   }
 
   update(time) {

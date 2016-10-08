@@ -1,14 +1,12 @@
 import { near, mod } from './utils';
 
 export default class Character {
-  constructor(tiles, map) {
-    this.tiles = tiles;
+  constructor(charParams, map) {
+    this.tiles = charParams.tiles;
+    this.runSpeed = charParams.runSpeed;
     this.map = map;
     this.parts = {};
-    this.setRandomPart('rearHair');
-    this.setRandomPart('face');
-    this.setRandomPart('body');
-    this.setRandomPart('frontHair');
+    this.randomizeParts();
     this.pos = {x: 30, y: 50};
     this.velocity = {x: 0, y: 0};
     this.acceleration = {x: 0, y: 0.0005};
@@ -17,6 +15,7 @@ export default class Character {
   }
 
   update(time) {
+    this.pos.x += time.delta * this.runSpeed;
     let footPos = this.state === 'running' ? 11 : 18;
     let floorHeight = 117 - this.map.heightHere(this.pos.x + footPos);
     if (!near(this.pos.y, floorHeight, 0.1) || this.velocity.y < 0 ) {
@@ -57,6 +56,13 @@ export default class Character {
     if (this.velocity.y === 0) {
       this.velocity.y = -0.24;
     }
+  }
+
+  randomizeParts() {
+    this.setRandomPart('rearHair');
+    this.setRandomPart('face');
+    this.setRandomPart('body');
+    this.setRandomPart('frontHair');
   }
 
   setRandomPart(partName) {

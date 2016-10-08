@@ -10,13 +10,17 @@ const PLATFORM = 9;
 const HEIGHTS = [-100, 13, 29, 45, 61];
 
 export default class Map {
-  constructor(tiles, mapstring) {
-    this.tiles = tiles;
-    this.stage = mapstring.split('');
+  constructor(params) {
+    this.tiles = params.tiles;
+    this.stage = params.mapstring.split('');
+    this.scrollSpeed = params.scrollSpeed;
+    this.bg = params.bg;
     this.x = 0;
     this.clouds = [];
-    for (let c = 0; c < 20; c++) {
-      this.clouds.push(this._randomCloud());
+    if (this.bg) {
+      for (let c = 0; c < 20; c++) {
+        this.clouds.push(this._randomCloud());
+      }
     }
   }
   _randomCloud() {
@@ -32,7 +36,8 @@ export default class Map {
     }
   }
   update(time, delta, ticks) {
-    this.x -= time.delta * 0.1;
+    this.x += time.delta * this.scrollSpeed;
+
     for(let i = 0; i < this.clouds.length; i++) {
       this._updateCloud(this.clouds[i], time);
     }
@@ -48,7 +53,7 @@ export default class Map {
 
     let cloud;
     for(let i = 0; i < this.clouds.length; i++) {
-      cloud = this.clouds[i];
+      cloud = this. clouds[i];
       graphics.drawTile(this.tiles.mapTiles, CLOUD_LEFT, 0, cloud.x, cloud.y, ctx);
       graphics.drawTile(this.tiles.mapTiles, CLOUD_RIGHT, 0, cloud.x + 16, cloud.y, ctx);
     };

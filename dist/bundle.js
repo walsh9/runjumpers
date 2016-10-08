@@ -195,16 +195,14 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Character = function () {
-	  function Character(tiles, map) {
+	  function Character(charParams, map) {
 	    _classCallCheck(this, Character);
 	
-	    this.tiles = tiles;
+	    this.tiles = charParams.tiles;
+	    this.runSpeed = charParams.runSpeed;
 	    this.map = map;
 	    this.parts = {};
-	    this.setRandomPart('rearHair');
-	    this.setRandomPart('face');
-	    this.setRandomPart('body');
-	    this.setRandomPart('frontHair');
+	    this.randomizeParts();
 	    this.pos = { x: 30, y: 50 };
 	    this.velocity = { x: 0, y: 0 };
 	    this.acceleration = { x: 0, y: 0.0005 };
@@ -215,6 +213,7 @@
 	  _createClass(Character, [{
 	    key: 'update',
 	    value: function update(time) {
+	      this.pos.x += time.delta * this.runSpeed;
 	      var footPos = this.state === 'running' ? 11 : 18;
 	      var floorHeight = 117 - this.map.heightHere(this.pos.x + footPos);
 	      if (!(0, _utils.near)(this.pos.y, floorHeight, 0.1) || this.velocity.y < 0) {
@@ -257,6 +256,14 @@
 	      if (this.velocity.y === 0) {
 	        this.velocity.y = -0.24;
 	      }
+	    }
+	  }, {
+	    key: 'randomizeParts',
+	    value: function randomizeParts() {
+	      this.setRandomPart('rearHair');
+	      this.setRandomPart('face');
+	      this.setRandomPart('body');
+	      this.setRandomPart('frontHair');
 	    }
 	  }, {
 	    key: 'setRandomPart',
@@ -391,15 +398,19 @@
 	var HEIGHTS = [-100, 13, 29, 45, 61];
 	
 	var Map = function () {
-	  function Map(tiles, mapstring) {
+	  function Map(params) {
 	    _classCallCheck(this, Map);
 	
-	    this.tiles = tiles;
-	    this.stage = mapstring.split('');
+	    this.tiles = params.tiles;
+	    this.stage = params.mapstring.split('');
+	    this.scrollSpeed = params.scrollSpeed;
+	    this.bg = params.bg;
 	    this.x = 0;
 	    this.clouds = [];
-	    for (var c = 0; c < 20; c++) {
-	      this.clouds.push(this._randomCloud());
+	    if (this.bg) {
+	      for (var c = 0; c < 20; c++) {
+	        this.clouds.push(this._randomCloud());
+	      }
 	    }
 	  }
 	
@@ -422,7 +433,8 @@
 	  }, {
 	    key: 'update',
 	    value: function update(time, delta, ticks) {
-	      this.x -= time.delta * 0.1;
+	      this.x += time.delta * this.scrollSpeed;
+	
 	      for (var i = 0; i < this.clouds.length; i++) {
 	        this._updateCloud(this.clouds[i], time);
 	      }
@@ -489,9 +501,19 @@
 	
 	var _screen2 = _interopRequireDefault(_screen);
 	
+	var _map = __webpack_require__(6);
+	
+	var _map2 = _interopRequireDefault(_map);
+	
+	var _character = __webpack_require__(3);
+	
+	var _character2 = _interopRequireDefault(_character);
+	
 	var _create = __webpack_require__(9);
 	
 	var _create2 = _interopRequireDefault(_create);
+	
+	var _utils = __webpack_require__(4);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -507,15 +529,43 @@
 	  function TitleScreen(game) {
 	    _classCallCheck(this, TitleScreen);
 	
-	    return _possibleConstructorReturn(this, (TitleScreen.__proto__ || Object.getPrototypeOf(TitleScreen)).call(this, game));
+	    var _this = _possibleConstructorReturn(this, (TitleScreen.__proto__ || Object.getPrototypeOf(TitleScreen)).call(this, game));
+	
+	    _this.map = new _map2.default({ tiles: _this.game.assets.tiles, mapstring: "111111111111", scrollSpeed: 0, bg: false });
+	    _this.map.x = -27;
+	    _this.character = new _character2.default({ tiles: _this.game.assets.tiles, runSpeed: 0.1 });
+	    _this.character.pos.y = 104;
+	    _this.character.pos.x = -27;
+	    _this.character.map = _this.map;
+	    _this.nextJump = (0, _utils.randomInt)(500, 2000);
+	    return _this;
 	  }
 	
 	  _createClass(TitleScreen, [{
+	    key: 'update',
+	    value: function update(time) {
+	      this.blink = time.ticks % 50 < 25;
+	      this.character.update(time);
+	      if (this.character.pos.x > 160) {
+	        this.character.randomizeParts();
+	        this.character.velocity.y = 0;
+	        this.character.pos.y = 104;
+	        this.character.pos.x = -27;
+	      }
+	      if (time.runTime > this.nextJump) {
+	        this.character.jump();
+	        this.nextJump = time.runTime + (0, _utils.randomInt)(500, 2000);
+	      }
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render(graphics, ctx) {
-	      // graphics.clearScreen(ctx, '#b4a56a');
 	      graphics.drawTile(this.game.assets.panels.title, 0, 0, 0, 0, ctx);
-	      graphics.drawText(this.game.assets.font, 'PRESS Z TO START', 'center', 90, ctx);
+	      if (this.blink) {
+	        graphics.drawText(this.game.assets.font, 'PRESS Z TO START', 'center', 90, ctx);
+	      }
+	      this.map.render(graphics, ctx);
+	      this.character.render(graphics, ctx);
 	    }
 	  }, {
 	    key: 'keydown',
@@ -614,7 +664,7 @@
 	
 	    _this.selection = 0;
 	    _this.choices = ['rearHair', 'frontHair', 'face', 'body', 'next'];
-	    _this.character = new _character2.default(_this.game.assets.tiles);
+	    _this.character = new _character2.default({ tiles: _this.game.assets.tiles, runSpeed: 0 });
 	    _this.blink = 0;
 	    return _this;
 	  }
@@ -747,9 +797,9 @@
 	
 	    var _this = _possibleConstructorReturn(this, (RunningScreen.__proto__ || Object.getPrototypeOf(RunningScreen)).call(this, game));
 	
-	    _this.map = new _map2.default(_this.game.assets.tiles, map01);
+	    _this.map = new _map2.default({ tiles: _this.game.assets.tiles, mapstring: map01, scrollSpeed: -0.1, bg: false });
 	    _this.character = character;
-	    character.map = _this.map;
+	    _this.character.map = _this.map;
 	    return _this;
 	  }
 	
