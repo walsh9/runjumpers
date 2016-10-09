@@ -1,43 +1,70 @@
 import Screen from '../screen';
 import Map from '../map';
+import maps from '../maps';
+import sounds from '../sounds';
 import Character from '../character';
 import RetryScreen from './retry';
-
-const map01 = {
-  data: "11111111111111110000011111111111111110011001111111111111111111100000111111111110000333333333300330033003322211111110044444440011001100110011111111111111X",
-  messages: [
-    {start: 5, end: 15, text: "PRESS Z TO JUMP"},
-    {start: 25, end: 35, text: "PRESS X TO HOP"},
-    {start: 47, end: 57 , text: "GOOD LUCK!"}
-  ]
-};
+import CongratsScreen from './congrats';
 
 export default class RunningScreen extends Screen {
   constructor(game, character) {
     super(game);
-    this.map = new Map({assets: this.game.assets, map: map01, scrollSpeed: -0.1, bg: true});
+    this.map = new Map({assets: this.game.assets, map: maps[this.game.level], scrollSpeed: -0.1, bg: true, sound: this.sound});
     this.character = character;
     this.character.map = this.map;
+    this.introTimer = 2000;
   }
 
   update(time) {
-    this.map.update(time);
-    this.character.update(time);
-    if (this.character.pos.y > 200) {
-      this.game.currentScreen = new RetryScreen(this.game, this.character);
+    if (this.introTimer > 0) {
+      this.introTimer -= time.delta;
+    } else {
+      this.map.update(time, this);
+      this.character.update(time, this);
     }
   }
 
   render(graphics) {
-    graphics.clearScreen('#e6d69c');
-    this.map.render(graphics);
-    this.character.render(graphics);
+    if (this.introTimer > 0) {
+      graphics.drawGraphic(this.graphics.frame, 0, 0);
+      graphics.drawText(`LEVEL ${this.game.level + 1}`, 'center', 55);
+      graphics.drawText(maps[this.game.level].title, 'center',70);
+    } else {
+      graphics.clearScreen('#e6d69c');
+      this.map.render(graphics);
+      this.character.render(graphics);
+    }
+  }
+
+  fall() {
+    this.sound.beep(...sounds.fall);
+    this.game.fallCount++;
+    this.game.currentScreen = new RetryScreen(this.game, this.character);
+  }
+
+  winSound() {
+    this.sound.beep(...sounds.levelWinA);
+    this.sound.beep(...sounds.levelWinB);
+  }
+
+  winLevel() {
+    this.winSound();
+    this.game.level++;
+    if (maps[this.game.level] !== undefined) {
+      this.game.currentScreen = new RunningScreen(this.game, this.character);
+    } else {
+      this.game.currentScreen = new CongratsScreen(this.game, this.character);
+    }
   }
 
   keydown(key) {
     switch(key) {
     case 'z':
-      this.character.jump();
+      if (this.introTimer > 0) {
+        this.introTimer = 0;
+      } else {
+        this.character.jump();
+      }
       break;
     case 'x':
       this.character.hop();

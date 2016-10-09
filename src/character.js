@@ -1,9 +1,11 @@
 import { near, mod } from './utils';
+import sounds from './sounds';
 
 export default class Character {
   constructor(charParams, map) {
     this.tiles = charParams.tiles;
     this.runSpeed = charParams.runSpeed;
+    this.sound = charParams.sound;
     this.map = map;
     this.parts = {};
     this.randomizeParts();
@@ -14,9 +16,9 @@ export default class Character {
     this.runFrame = 1;
   }
 
-  update(time) {
+  update(time, screen) {
     this.pos.x += time.delta * this.runSpeed;
-    let footPos = this.state === 'running' ? 11 : 18;
+    let footPos = this.state === 'running' ? 10 : 18;
     let floorHeight = 117 - this.map.heightHere(this.pos.x + footPos);
     if (!near(this.pos.y, floorHeight, 0.1) || this.velocity.y < 0 ) {
       if (this.velocity.y <= 0) {
@@ -35,6 +37,9 @@ export default class Character {
       this.pos.y      = floorHeight;
     }
     this.runFrame = (time.ticks % 6) < 3 ? 1 : 2;
+    if (this.pos.y > 200) {
+      screen.fall();
+    }
   }
 
   render(graphics) {
@@ -53,14 +58,16 @@ export default class Character {
   }
 
   jump() {
-    if (this.velocity.y === 0) {
+    if (this.state === 'running') {
+      this.sound.beep(...sounds.jump);
       this.velocity.y = -0.24;
     }
   }
 
   hop() {
-    if (this.velocity.y === 0) {
-      this.velocity.y = -0.12;
+    if (this.state === 'running') {
+      this.sound.beep(...sounds.hop);
+      this.velocity.y = -0.135;
     }
   }
 

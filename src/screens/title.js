@@ -1,5 +1,6 @@
 import Screen from '../screen';
 import Map from '../map';
+import sounds from '../sounds';
 import Character from '../character';
 import CreateScreen from './create';
 import { randomInt } from '../utils';
@@ -7,9 +8,9 @@ import { randomInt } from '../utils';
 export default class TitleScreen extends Screen {
   constructor(game) {
     super(game);
-    this.map = new Map({assets: this.game.assets, map:{data: "111111111111"}, scrollSpeed: 0, bg: false});
+    this.map = new Map({assets: this.game.assets, map:{data: "111111111111"}, scrollSpeed: 0, bg: false, sound: this.sound});
     this.map.x = -27;
-    this.character = new Character({tiles: this.tiles, runSpeed: 0.1});
+    this.character = new Character({tiles: this.tiles, runSpeed: 0.1, sound: this.sound});
     this.character.pos.y = 104;
     this.character.pos.x = -27;
     this.character.map = this.map;
@@ -41,9 +42,17 @@ export default class TitleScreen extends Screen {
     this.character.render(graphics);
   }
 
+  menuChime() {
+    this.sound.beep(...sounds.menuSelectA);
+    this.sound.beep(...sounds.menuSelectB);
+  }
+
   keydown(key) {
     switch(key) {
     case 'z':
+      this.menuChime();
+      this.game.level = 0;
+      this.game.fallCount = 0;
       this.game.currentScreen = new CreateScreen(this.game);
       break;
     }

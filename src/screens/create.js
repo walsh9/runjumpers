@@ -1,5 +1,6 @@
 import Screen from '../screen';
 import { mod } from '../utils';
+import sounds from '../sounds';
 import RunningScreen from './running';
 import Character from '../character';
 
@@ -8,7 +9,7 @@ export default class CreateScreen extends Screen {
     super(game);
     this.selection = 0;
     this.choices = ['rearHair', 'frontHair', 'face', 'body', 'next'];
-    this.character = new Character({tiles: this.game.assets.tiles, runSpeed: 0});
+    this.character = new Character({tiles: this.game.assets.tiles, runSpeed: 0, sound: this.sound});
     this.blink = 0;
   }
 
@@ -36,28 +37,43 @@ export default class CreateScreen extends Screen {
 
   nextScreen() {
     if (this.selection === 4) {
+      this.menuChime();
       this.game.currentScreen = new RunningScreen(this.game, this.character);
     }
   }
 
+  menuBeep() {
+    this.sound.beep(...sounds.menuChooseA);
+    this.sound.beep(...sounds.menuChooseB);
+  }
+
+  menuChime() {
+    this.sound.beep(...sounds.menuSelectA);
+    this.sound.beep(...sounds.menuSelectB);
+  }
+
   selectUp() {
     this.selection = Math.max(this.selection - 1, 0);
+    this.menuBeep();
   }
 
   selectDown() {
     this.selection = Math.min(this.selection + 1, this.choices.length - 1);
+    this.menuBeep();
   }
 
   setLeft() {
     if (this.selection < 4) {
       this.character.setPrevPart(this.choices[this.selection]);
     }
+    this.menuBeep();
   }
 
   setRight() {
     if (this.selection < 4) {
       this.character.setNextPart(this.choices[this.selection]);
     }
+    this.menuBeep();
   }
 
   keydown(key, event) {

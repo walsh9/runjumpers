@@ -1,5 +1,6 @@
 import Screen from '../screen';
 import { mod } from '../utils';
+import sounds from '../sounds';
 import RunningScreen from './running';
 import CreateScreen from './create';
 import TitleScreen from './title';
@@ -28,9 +29,13 @@ export default class Retry extends Screen {
     if (this.blink) {
       graphics.drawText('*               *', 'center', this.selection * 13 + 54);
     }
+
+    graphics.drawText(`FALLS: ${this.game.fallCount}`, 'center', 120);
+
   }
 
   nextScreen() {
+    this.menuChime();
     if (this.selection === 0) {
       this.character.pos = {x: 30, y: 55};
       this.character.velocity = {x: 0, y: 0};
@@ -42,12 +47,24 @@ export default class Retry extends Screen {
     }
   }
 
+  menuBeep() {
+    this.sound.beep(...sounds.menuChooseA);
+    this.sound.beep(...sounds.menuChooseB);
+  }
+
+  menuChime() {
+    this.sound.beep(...sounds.menuSelectA);
+    this.sound.beep(...sounds.menuSelectB);
+  }
+
   selectUp() {
     this.selection = Math.max(this.selection - 1, 0);
+    this.menuBeep();
   }
 
   selectDown() {
     this.selection = Math.min(this.selection + 1, this.choices);
+    this.menuBeep();
   }
 
   keydown(key, event) {

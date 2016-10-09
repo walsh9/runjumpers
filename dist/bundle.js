@@ -65,6 +65,10 @@
 	
 	var _graphics2 = _interopRequireDefault(_graphics);
 	
+	var _sound = __webpack_require__(27);
+	
+	var _sound2 = _interopRequireDefault(_sound);
+	
 	var _title = __webpack_require__(7);
 	
 	var _title2 = _interopRequireDefault(_title);
@@ -83,34 +87,42 @@
 	  }
 	};
 	
-	var gameTimer = new _timer2.default(Game, 1 / 60);
+	var load = function load() {
+	  var loader = new _loader2.default();
+	  loader.addTileSet('rearHair', 'i/ppl_rear_hair.png', 27, 27);
+	  loader.addTileSet('body', 'i/ppl_body.png', 27, 27);
+	  loader.addTileSet('face', 'i/ppl_face.png', 27, 27);
+	  loader.addTileSet('frontHair', 'i/ppl_front_hair.png', 27, 27);
+	  loader.addTileSet('mapTiles', 'i/misc.png', 16, 16);
+	  loader.addTileSet('font', 'i/font5x7.png', 5, 7);
+	  loader.addGraphic('title', 'i/logo.png');
+	  loader.addGraphic('frame', 'i/frame.png');
+	  loader.addGraphic('playerframe', 'i/playerframe.png');
+	  for (var n = 1; n <= 10; n++) {
+	    loader.addGraphic('bgDark' + n, 'i/bg/bg_slice_skyline_' + n + '_dark.png');
+	    loader.addGraphic('bgLight' + n, 'i/bg/bg_slice_skyline_' + n + '_light.png');
+	  }
+	  return loader.load();
+	};
 	
-	var loader = new _loader2.default();
-	loader.addTileSet('rearHair', 'i/ppl_rear_hair.png', 27, 27);
-	loader.addTileSet('body', 'i/ppl_body.png', 27, 27);
-	loader.addTileSet('face', 'i/ppl_face.png', 27, 27);
-	loader.addTileSet('frontHair', 'i/ppl_front_hair.png', 27, 27);
-	loader.addTileSet('mapTiles', 'i/misc.png', 16, 16);
-	loader.addTileSet('font', 'i/font5x7.png', 5, 7);
-	loader.addGraphic('title', 'i/logo.png');
-	loader.addGraphic('frame', 'i/frame.png');
-	loader.addGraphic('playerframe', 'i/playerframe.png');
-	for (var n = 1; n <= 10; n++) {
-	  loader.addGraphic('bgDark' + n, 'i/bg/bg_slice_skyline_' + n + '_dark.png');
-	  loader.addGraphic('bgLight' + n, 'i/bg/bg_slice_skyline_' + n + '_light.png');
-	}
-	loader.load().then(function (assetBundle) {
-	  window.Game.assets = assetBundle;
+	var start = function start(assets) {
+	  var game = window.Game;
+	  Game.assets = assets;
+	  Game.level = 0;
+	  Game.fallCount = 0;
 	  var ctx = document.querySelector('canvas').getContext('2d');
-	  window.Game.graphics = new _graphics2.default(ctx);
-	  window.Game.graphics.setFont(window.Game.assets.tiles.font);
+	  Game.graphics = new _graphics2.default(ctx);
+	  Game.sound = new _sound2.default();
+	  Game.graphics.setFont(Game.assets.tiles.font);
+	  window.addEventListener('keydown', function (event) {
+	    var key = event.key;
+	    Game.currentScreen.keydown(key, event);
+	  });
+	  var gameTimer = new _timer2.default(Game, 1 / 60);
 	  gameTimer.start();
-	});
+	};
 	
-	window.addEventListener('keydown', function (event) {
-	  var key = event.key;
-	  Game.currentScreen.keydown(key, event);
-	});
+	load().then(start);
 
 /***/ },
 /* 2 */
@@ -206,6 +218,14 @@
 	
 	var _utils = __webpack_require__(4);
 	
+	var _sounds = __webpack_require__(28);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Character = function () {
@@ -214,6 +234,7 @@
 	
 	    this.tiles = charParams.tiles;
 	    this.runSpeed = charParams.runSpeed;
+	    this.sound = charParams.sound;
 	    this.map = map;
 	    this.parts = {};
 	    this.randomizeParts();
@@ -226,9 +247,9 @@
 	
 	  _createClass(Character, [{
 	    key: 'update',
-	    value: function update(time) {
+	    value: function update(time, screen) {
 	      this.pos.x += time.delta * this.runSpeed;
-	      var footPos = this.state === 'running' ? 11 : 18;
+	      var footPos = this.state === 'running' ? 10 : 18;
 	      var floorHeight = 117 - this.map.heightHere(this.pos.x + footPos);
 	      if (!(0, _utils.near)(this.pos.y, floorHeight, 0.1) || this.velocity.y < 0) {
 	        if (this.velocity.y <= 0) {
@@ -247,6 +268,9 @@
 	        this.pos.y = floorHeight;
 	      }
 	      this.runFrame = time.ticks % 6 < 3 ? 1 : 2;
+	      if (this.pos.y > 200) {
+	        screen.fall();
+	      }
 	    }
 	  }, {
 	    key: 'render',
@@ -267,15 +291,21 @@
 	  }, {
 	    key: 'jump',
 	    value: function jump() {
-	      if (this.velocity.y === 0) {
+	      if (this.state === 'running') {
+	        var _sound;
+	
+	        (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.jump));
 	        this.velocity.y = -0.24;
 	      }
 	    }
 	  }, {
 	    key: 'hop',
 	    value: function hop() {
-	      if (this.velocity.y === 0) {
-	        this.velocity.y = -0.12;
+	      if (this.state === 'running') {
+	        var _sound2;
+	
+	        (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.hop));
+	        this.velocity.y = -0.135;
 	      }
 	    }
 	  }, {
@@ -421,9 +451,15 @@
 	
 	var _utils = __webpack_require__(4);
 	
+	var _sounds = __webpack_require__(28);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var Y_FROM_FLOOR = [128, 112, 96, 80, 68];
+	var Y_FROM_FLOOR = [128, 112, 96, 80, 64, 48, 32, 16, 0];
 	var GROUND = 0;
 	var COLUMN_ROOT = 1;
 	var COLUMN_MID = 2;
@@ -431,7 +467,11 @@
 	var CLOUD_RIGHT = 8;
 	var CLOUD_LEFT = 7;
 	var PLATFORM = 9;
-	var HEIGHTS = [-100, 13, 29, 45, 61];
+	var GLOW_PILLAR_1 = 12;
+	var GLOW_PILLAR_2 = 13;
+	var GLOW_COLUMN_1 = 14;
+	var GLOW_COLUMN_2 = 15;
+	var HEIGHTS = [-100, 13, 29, 45, 61, 77, 93, 13, 29, 13];
 	
 	var Map = function () {
 	  function Map(params) {
@@ -439,13 +479,14 @@
 	
 	    this.tiles = params.assets.tiles;
 	    this.graphics = params.assets.graphics;
+	    this.sound = params.sound;
 	    this.stage = params.map.data.split('');
 	    this.messages = params.map.messages || [];
 	    this.stageWidth = this.stage.length * this.tiles.mapTiles.tileWidth;
 	    this.scrollSpeed = params.scrollSpeed;
 	    this.bg = params.bg;
 	    this.x = 0;
-	    this.clouds = [];
+	    this.glow = 0;
 	    if (this.bg) {
 	      var bgSlices = (0, _utils.shuffle)([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 	      this.bg1 = this.createBg('Dark', 15, 0.4, bgSlices.slice(0, 5));
@@ -455,11 +496,12 @@
 	
 	  _createClass(Map, [{
 	    key: 'update',
-	    value: function update(time, delta, ticks) {
+	    value: function update(time, screen) {
 	      this.x += time.delta * this.scrollSpeed;
-	
-	      for (var i = 0; i < this.clouds.length; i++) {
-	        this._updateCloud(this.clouds[i], time);
+	      this.glow = time.ticks % 2;
+	      var here = Math.floor((-this.x + 36) / this.tiles.mapTiles.tileWidth);
+	      if (this.stage[here] === '9') {
+	        screen.winLevel();
 	      }
 	    }
 	  }, {
@@ -502,7 +544,22 @@
 	          case '2':
 	          case '3':
 	          case '4':
+	          case '5':
+	          case '6':
 	            graphics.drawTile(_this.tiles.mapTiles, PLATFORM, 0, x, Y_FROM_FLOOR[t - 1]);
+	            break;
+	          case '7':
+	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_TOP, 0, x, Y_FROM_FLOOR[0]);
+	            break;
+	          case '8':
+	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_TOP, 0, x, Y_FROM_FLOOR[1]);
+	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_MID, 0, x, Y_FROM_FLOOR[0]);
+	            break;
+	          case '9':
+	            for (var _i = 1; _i < 9; _i++) {
+	              graphics.drawTile(_this.tiles.mapTiles, GLOW_PILLAR_1 + _this.glow, 0, x, Y_FROM_FLOOR[_i]);
+	            }
+	            graphics.drawTile(_this.tiles.mapTiles, GLOW_COLUMN_1 + _this.glow, 0, x, Y_FROM_FLOOR[0]);
 	            break;
 	        }
 	      });
@@ -510,7 +567,7 @@
 	  }, {
 	    key: 'createBg',
 	    value: function createBg(variant, spacing, parallaxFactor, availableSlices) {
-	      var minWidth = Math.floor(this.stageWidth * parallaxFactor);
+	      var minWidth = Math.floor((this.stageWidth + 320) * parallaxFactor);
 	      var w = 0;
 	      var possibleSlices = [];
 	      var slices = [];
@@ -563,6 +620,10 @@
 	
 	var _map2 = _interopRequireDefault(_map);
 	
+	var _sounds = __webpack_require__(28);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
 	var _character = __webpack_require__(3);
 	
 	var _character2 = _interopRequireDefault(_character);
@@ -574,6 +635,8 @@
 	var _utils = __webpack_require__(4);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -589,9 +652,9 @@
 	
 	    var _this = _possibleConstructorReturn(this, (TitleScreen.__proto__ || Object.getPrototypeOf(TitleScreen)).call(this, game));
 	
-	    _this.map = new _map2.default({ assets: _this.game.assets, map: { data: "111111111111" }, scrollSpeed: 0, bg: false });
+	    _this.map = new _map2.default({ assets: _this.game.assets, map: { data: "111111111111" }, scrollSpeed: 0, bg: false, sound: _this.sound });
 	    _this.map.x = -27;
-	    _this.character = new _character2.default({ tiles: _this.tiles, runSpeed: 0.1 });
+	    _this.character = new _character2.default({ tiles: _this.tiles, runSpeed: 0.1, sound: _this.sound });
 	    _this.character.pos.y = 104;
 	    _this.character.pos.x = -27;
 	    _this.character.map = _this.map;
@@ -627,10 +690,21 @@
 	      this.character.render(graphics);
 	    }
 	  }, {
+	    key: 'menuChime',
+	    value: function menuChime() {
+	      var _sound, _sound2;
+	
+	      (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.menuSelectA));
+	      (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.menuSelectB));
+	    }
+	  }, {
 	    key: 'keydown',
 	    value: function keydown(key) {
 	      switch (key) {
 	        case 'z':
+	          this.menuChime();
+	          this.game.level = 0;
+	          this.game.fallCount = 0;
 	          this.game.currentScreen = new _create2.default(this.game);
 	          break;
 	      }
@@ -663,6 +737,7 @@
 	    this.game = game;
 	    this.tiles = game.assets.tiles;
 	    this.graphics = game.assets.graphics;
+	    this.sound = game.sound;
 	  }
 	
 	  _createClass(Screen, [{
@@ -699,6 +774,10 @@
 	
 	var _utils = __webpack_require__(4);
 	
+	var _sounds = __webpack_require__(28);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
 	var _running = __webpack_require__(10);
 	
 	var _running2 = _interopRequireDefault(_running);
@@ -708,6 +787,8 @@
 	var _character2 = _interopRequireDefault(_character);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -725,7 +806,7 @@
 	
 	    _this.selection = 0;
 	    _this.choices = ['rearHair', 'frontHair', 'face', 'body', 'next'];
-	    _this.character = new _character2.default({ tiles: _this.game.assets.tiles, runSpeed: 0 });
+	    _this.character = new _character2.default({ tiles: _this.game.assets.tiles, runSpeed: 0, sound: _this.sound });
 	    _this.blink = 0;
 	    return _this;
 	  }
@@ -758,18 +839,37 @@
 	    key: 'nextScreen',
 	    value: function nextScreen() {
 	      if (this.selection === 4) {
+	        this.menuChime();
 	        this.game.currentScreen = new _running2.default(this.game, this.character);
 	      }
+	    }
+	  }, {
+	    key: 'menuBeep',
+	    value: function menuBeep() {
+	      var _sound, _sound2;
+	
+	      (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.menuChooseA));
+	      (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.menuChooseB));
+	    }
+	  }, {
+	    key: 'menuChime',
+	    value: function menuChime() {
+	      var _sound3, _sound4;
+	
+	      (_sound3 = this.sound).beep.apply(_sound3, _toConsumableArray(_sounds2.default.menuSelectA));
+	      (_sound4 = this.sound).beep.apply(_sound4, _toConsumableArray(_sounds2.default.menuSelectB));
 	    }
 	  }, {
 	    key: 'selectUp',
 	    value: function selectUp() {
 	      this.selection = Math.max(this.selection - 1, 0);
+	      this.menuBeep();
 	    }
 	  }, {
 	    key: 'selectDown',
 	    value: function selectDown() {
 	      this.selection = Math.min(this.selection + 1, this.choices.length - 1);
+	      this.menuBeep();
 	    }
 	  }, {
 	    key: 'setLeft',
@@ -777,6 +877,7 @@
 	      if (this.selection < 4) {
 	        this.character.setPrevPart(this.choices[this.selection]);
 	      }
+	      this.menuBeep();
 	    }
 	  }, {
 	    key: 'setRight',
@@ -784,6 +885,7 @@
 	      if (this.selection < 4) {
 	        this.character.setNextPart(this.choices[this.selection]);
 	      }
+	      this.menuBeep();
 	    }
 	  }, {
 	    key: 'keydown',
@@ -837,6 +939,14 @@
 	
 	var _map2 = _interopRequireDefault(_map);
 	
+	var _maps = __webpack_require__(26);
+	
+	var _maps2 = _interopRequireDefault(_maps);
+	
+	var _sounds = __webpack_require__(28);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
 	var _character = __webpack_require__(3);
 	
 	var _character2 = _interopRequireDefault(_character);
@@ -845,18 +955,19 @@
 	
 	var _retry2 = _interopRequireDefault(_retry);
 	
+	var _congrats = __webpack_require__(29);
+	
+	var _congrats2 = _interopRequireDefault(_congrats);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var map01 = {
-	  data: "11111111111111110000011111111111111110011001111111111111111111100000111111111110000333333333300330033003322211111110044444440011001100110011111111111111X",
-	  messages: [{ start: 5, end: 15, text: "PRESS Z TO JUMP" }, { start: 25, end: 35, text: "PRESS X TO HOP" }, { start: 47, end: 57, text: "GOOD LUCK!" }]
-	};
 	
 	var RunningScreen = function (_Screen) {
 	  _inherits(RunningScreen, _Screen);
@@ -866,34 +977,74 @@
 	
 	    var _this = _possibleConstructorReturn(this, (RunningScreen.__proto__ || Object.getPrototypeOf(RunningScreen)).call(this, game));
 	
-	    _this.map = new _map2.default({ assets: _this.game.assets, map: map01, scrollSpeed: -0.1, bg: true });
+	    _this.map = new _map2.default({ assets: _this.game.assets, map: _maps2.default[_this.game.level], scrollSpeed: -0.1, bg: true, sound: _this.sound });
 	    _this.character = character;
 	    _this.character.map = _this.map;
+	    _this.introTimer = 2000;
 	    return _this;
 	  }
 	
 	  _createClass(RunningScreen, [{
 	    key: 'update',
 	    value: function update(time) {
-	      this.map.update(time);
-	      this.character.update(time);
-	      if (this.character.pos.y > 200) {
-	        this.game.currentScreen = new _retry2.default(this.game, this.character);
+	      if (this.introTimer > 0) {
+	        this.introTimer -= time.delta;
+	      } else {
+	        this.map.update(time, this);
+	        this.character.update(time, this);
 	      }
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render(graphics) {
-	      graphics.clearScreen('#e6d69c');
-	      this.map.render(graphics);
-	      this.character.render(graphics);
+	      if (this.introTimer > 0) {
+	        graphics.drawGraphic(this.graphics.frame, 0, 0);
+	        graphics.drawText('LEVEL ' + (this.game.level + 1), 'center', 55);
+	        graphics.drawText(_maps2.default[this.game.level].title, 'center', 70);
+	      } else {
+	        graphics.clearScreen('#e6d69c');
+	        this.map.render(graphics);
+	        this.character.render(graphics);
+	      }
+	    }
+	  }, {
+	    key: 'fall',
+	    value: function fall() {
+	      var _sound;
+	
+	      (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.fall));
+	      this.game.fallCount++;
+	      this.game.currentScreen = new _retry2.default(this.game, this.character);
+	    }
+	  }, {
+	    key: 'winSound',
+	    value: function winSound() {
+	      var _sound2, _sound3;
+	
+	      (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.levelWinA));
+	      (_sound3 = this.sound).beep.apply(_sound3, _toConsumableArray(_sounds2.default.levelWinB));
+	    }
+	  }, {
+	    key: 'winLevel',
+	    value: function winLevel() {
+	      this.winSound();
+	      this.game.level++;
+	      if (_maps2.default[this.game.level] !== undefined) {
+	        this.game.currentScreen = new RunningScreen(this.game, this.character);
+	      } else {
+	        this.game.currentScreen = new _congrats2.default(this.game, this.character);
+	      }
 	    }
 	  }, {
 	    key: 'keydown',
 	    value: function keydown(key) {
 	      switch (key) {
 	        case 'z':
-	          this.character.jump();
+	          if (this.introTimer > 0) {
+	            this.introTimer = 0;
+	          } else {
+	            this.character.jump();
+	          }
 	          break;
 	        case 'x':
 	          this.character.hop();
@@ -2035,6 +2186,10 @@
 	
 	var _utils = __webpack_require__(4);
 	
+	var _sounds = __webpack_require__(28);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
 	var _running = __webpack_require__(10);
 	
 	var _running2 = _interopRequireDefault(_running);
@@ -2052,6 +2207,8 @@
 	var _character2 = _interopRequireDefault(_character);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -2091,10 +2248,13 @@
 	      if (this.blink) {
 	        graphics.drawText('*               *', 'center', this.selection * 13 + 54);
 	      }
+	
+	      graphics.drawText('FALLS: ' + this.game.fallCount, 'center', 120);
 	    }
 	  }, {
 	    key: 'nextScreen',
 	    value: function nextScreen() {
+	      this.menuChime();
 	      if (this.selection === 0) {
 	        this.character.pos = { x: 30, y: 55 };
 	        this.character.velocity = { x: 0, y: 0 };
@@ -2106,14 +2266,32 @@
 	      }
 	    }
 	  }, {
+	    key: 'menuBeep',
+	    value: function menuBeep() {
+	      var _sound, _sound2;
+	
+	      (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.menuChooseA));
+	      (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.menuChooseB));
+	    }
+	  }, {
+	    key: 'menuChime',
+	    value: function menuChime() {
+	      var _sound3, _sound4;
+	
+	      (_sound3 = this.sound).beep.apply(_sound3, _toConsumableArray(_sounds2.default.menuSelectA));
+	      (_sound4 = this.sound).beep.apply(_sound4, _toConsumableArray(_sounds2.default.menuSelectB));
+	    }
+	  }, {
 	    key: 'selectUp',
 	    value: function selectUp() {
 	      this.selection = Math.max(this.selection - 1, 0);
+	      this.menuBeep();
 	    }
 	  }, {
 	    key: 'selectDown',
 	    value: function selectDown() {
 	      this.selection = Math.min(this.selection + 1, this.choices);
+	      this.menuBeep();
 	    }
 	  }, {
 	    key: 'keydown',
@@ -2138,6 +2316,178 @@
 	}(_screen2.default);
 	
 	exports.default = Retry;
+
+/***/ },
+/* 26 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = [{ title: "WELCOME TO RUNJUMPERS",
+	  data: "7777777777777777000007777777777777777007700770077777777777777777700000111111111110000333333333300330033003322211111110044444440011001100110077777777777777977",
+	  messages: [{ start: 3, end: 15, text: "PRESS Z TO JUMP" }, { start: 25, end: 35, text: "PRESS X TO HOP" }, { start: 47, end: 57, text: "GOOD LUCK!" }] }, { title: "HOP, SKIP, JUMP",
+	  data: "7777777777777777000088888800770000088000000777777777777770002220004440006666666666005004003002007777777777700070007000700077777777770000077777777777777977",
+	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }, { title: "UPS AND DOWNS",
+	  data: "777777777777777700008800088000880000022200222001555155515551555103333333300000333333300330033000007777770077777777977",
+	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }, { title: "JUMPRUNNERS",
+	  data: "777777777777777700033300033300100000200000300000400000555000555000003330010501050105010501050103010007777700000888888000007777700770077007700777777977",
+	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }, { title: "THE FINAL CHALLENGE",
+	  data: "777777777777777700003300100004400010000333003330000220000100044400000077700770007700070007007770000077777777977",
+	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }];
+
+/***/ },
+/* 27 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var BeepMaker = function BeepMaker() {
+	  var audioContext = window.AudioContext || window.webkitAudioContext;
+	  this.context = new audioContext();
+	  this.muted = false;
+	
+	  this.freqMutator = 1;
+	  this.freq2Mutator = 1;
+	  this.timeMutator = 1;
+	};
+	
+	BeepMaker.prototype.beep = function (frequency, frequency2, type, durationSeconds, volume) {
+	  if (this.muted) {
+	    return;
+	  }
+	  var ctx = this.context;
+	  var osc = ctx.createOscillator();
+	  var gainOsc = ctx.createGain();
+	
+	  var vol = volume || 0.5;
+	  osc.type = type;
+	  osc.frequency.setValueAtTime(frequency, ctx.currentTime);
+	  osc.frequency.exponentialRampToValueAtTime(frequency2, ctx.currentTime + durationSeconds * 0.9);
+	  osc.frequency.exponentialRampToValueAtTime(frequency, ctx.currentTime + durationSeconds);
+	
+	  gainOsc.gain.setValueAtTime(vol, ctx.currentTime);
+	  gainOsc.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + durationSeconds);
+	
+	  osc.connect(gainOsc);
+	  gainOsc.connect(ctx.destination);
+	
+	  osc.start(ctx.currentTime);
+	  osc.stop(ctx.currentTime + durationSeconds);
+	};
+	
+	exports.default = BeepMaker;
+
+/***/ },
+/* 28 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = {
+	  jump: [500, 3500, 'square', 0.3],
+	  hop: [500, 1500, 'square', 0.2],
+	  fall: [1500, 500, 'sine', 2],
+	  menuChooseA: [1000, 1500, 'triangle', 0.1],
+	  menuChooseB: [1100, 2800, 'triangle', 0.2],
+	  menuSelectA: [2000, 2000, 'square', 0.8, 0.1],
+	  menuSelectB: [2500, 2500, 'square', 1.0, 0.1],
+	  levelWinA: [2000, 2000, 'square', 1.5, 0.1],
+	  levelWinB: [1000, 2500, 'square', 1.7, 0.1]
+	};
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _screen = __webpack_require__(8);
+	
+	var _screen2 = _interopRequireDefault(_screen);
+	
+	var _utils = __webpack_require__(4);
+	
+	var _sounds = __webpack_require__(28);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
+	var _running = __webpack_require__(10);
+	
+	var _running2 = _interopRequireDefault(_running);
+	
+	var _create = __webpack_require__(9);
+	
+	var _create2 = _interopRequireDefault(_create);
+	
+	var _title = __webpack_require__(7);
+	
+	var _title2 = _interopRequireDefault(_title);
+	
+	var _character = __webpack_require__(3);
+	
+	var _character2 = _interopRequireDefault(_character);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var CongratsScreen = function (_Screen) {
+	  _inherits(CongratsScreen, _Screen);
+	
+	  function CongratsScreen(game, character) {
+	    _classCallCheck(this, CongratsScreen);
+	
+	    var _this = _possibleConstructorReturn(this, (CongratsScreen.__proto__ || Object.getPrototypeOf(CongratsScreen)).call(this, game));
+	
+	    _this.selection = 0;
+	    _this.choices = 2;
+	    _this.character = character;
+	    _this.character.pos = { x: 67, y: 53 };
+	    _this.character.speed = { x: 0, y: 0 };
+	    return _this;
+	  }
+	
+	  _createClass(CongratsScreen, [{
+	    key: 'update',
+	    value: function update(time) {
+	      this.character.state = 'running';
+	      this.character.runFrame = time.ticks % 6 < 3 ? 1 : 2;
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(graphics) {
+	      graphics.drawGraphic(this.graphics.frame, 0, 0);
+	      this.character.render(graphics);
+	      graphics.drawText('CONGRATULATIONS!', 'center', 20);
+	      graphics.drawText('YOU REALLY DID IT!', 'center', 35);
+	      graphics.drawText('THANKS FOR PLAYING!', 'center', 100);
+	      graphics.drawText('FALLS: ' + this.game.fallCount, 'center', 120);
+	    }
+	  }]);
+	
+	  return CongratsScreen;
+	}(_screen2.default);
+	
+	exports.default = CongratsScreen;
 
 /***/ }
 /******/ ]);
