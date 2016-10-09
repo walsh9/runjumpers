@@ -7,7 +7,7 @@ export default class Character {
     this.map = map;
     this.parts = {};
     this.randomizeParts();
-    this.pos = {x: 30, y: 50};
+    this.pos = {x: 30, y: 55};
     this.velocity = {x: 0, y: 0};
     this.acceleration = {x: 0, y: 0.0005};
     this.state = 'standing';

@@ -35,7 +35,7 @@ export default class TitleScreen extends Screen {
     graphics.clearScreen('#b4a56a');
     graphics.drawGraphic(this.graphics.title, 0, 0);
     if (this.blink) {
-      graphics.drawText('PRESS Z TO START', 'center', 90);
+      graphics.drawText('PRESS Z TO START', 'center', 80);
     }
     this.map.render(graphics);
     this.character.render(graphics);

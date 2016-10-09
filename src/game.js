@@ -25,6 +25,8 @@ loader.addTileSet('frontHair', 'i/ppl_front_hair.png', 27, 27);
 loader.addTileSet('mapTiles', 'i/misc.png', 16, 16);
 loader.addTileSet('font', 'i/font5x7.png', 5, 7);
 loader.addGraphic('title', 'i/logo.png');
+loader.addGraphic('frame', 'i/frame.png');
+loader.addGraphic('playerframe', 'i/playerframe.png');
 for(let n = 1; n <= 10; n++){
   loader.addGraphic(`bgDark${n}`, `i/bg/bg_slice_skyline_${n}_dark.png`);
   loader.addGraphic(`bgLight${n}`, `i/bg/bg_slice_skyline_${n}_light.png`);

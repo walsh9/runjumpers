@@ -17,18 +17,19 @@ export default class CreateScreen extends Screen {
   }
 
   render(graphics) {
-    graphics.clearScreen('#b4a56a');
-    graphics.drawText('CREATE A NEW RUNJUMPER', 'center', 10);
-    graphics.drawText('HAIR', 80, 40);
-    graphics.drawText('BANGS', 80, 50);
-    graphics.drawText('FACE', 80, 60);
-    graphics.drawText('BODY', 80, 70);
-    graphics.drawText('RUN!', 80, 90);
+    graphics.drawGraphic(this.graphics.frame, 0, 0);
+    graphics.drawGraphic(this.graphics.playerframe, 0, 0);
+    graphics.drawText('CREATE A NEW RUNJUMPER', 'center', 20);
+    graphics.drawText('HAIR', 90, 50);
+    graphics.drawText('BANGS', 90, 60);
+    graphics.drawText('FACE', 90, 70);
+    graphics.drawText('BODY', 90, 80);
+    graphics.drawText('RUN!', 'center', 110);
     if (this.selection < 4) {
-      graphics.drawText('←      →', 70, this.selection * 10 + 40);
+      graphics.drawText('←      →', 80, this.selection * 10 + 50);
     }
     if (this.selection === 4 && this.blink) {
-      graphics.drawText('[     ]', 70, 90);
+      graphics.drawText('*     *', 'center', 110);
     }
     this.character.render(graphics);
   }

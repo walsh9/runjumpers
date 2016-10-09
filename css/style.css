@@ -1,4 +1,29 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #334466;
+}
+h1 {
+  background: #99aacc;
+  font-family: 'Bangers', sans-serif;
+  text-align: center;
+  font-size: 40px;
+  color: #184060;
+  letter-spacing: 0.1em;
+  margin: 0 auto 20px auto;
+  padding: 5px;
+  position: relative;
+  text-shadow: -1px 0 #184060, 0 1px #184060, 1px 0 #184060, 0 -1px #184060;
+}
+h1:before {
+    content: "RUNJUMPERS";
+    color: #7b7789;
+    height: 30%;
+    position: absolute;
+    overflow: hidden;
+}
 canvas {
+  border: 10px solid #223350;
   background: #b4a56a;
   display: block;
   width: 320px;

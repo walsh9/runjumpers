@@ -93,6 +93,8 @@
 	loader.addTileSet('mapTiles', 'i/misc.png', 16, 16);
 	loader.addTileSet('font', 'i/font5x7.png', 5, 7);
 	loader.addGraphic('title', 'i/logo.png');
+	loader.addGraphic('frame', 'i/frame.png');
+	loader.addGraphic('playerframe', 'i/playerframe.png');
 	for (var n = 1; n <= 10; n++) {
 	  loader.addGraphic('bgDark' + n, 'i/bg/bg_slice_skyline_' + n + '_dark.png');
 	  loader.addGraphic('bgLight' + n, 'i/bg/bg_slice_skyline_' + n + '_light.png');
@@ -215,7 +217,7 @@
 	    this.map = map;
 	    this.parts = {};
 	    this.randomizeParts();
-	    this.pos = { x: 30, y: 50 };
+	    this.pos = { x: 30, y: 55 };
 	    this.velocity = { x: 0, y: 0 };
 	    this.acceleration = { x: 0, y: 0.0005 };
 	    this.state = 'standing';
@@ -610,7 +612,7 @@
 	      graphics.clearScreen('#b4a56a');
 	      graphics.drawGraphic(this.graphics.title, 0, 0);
 	      if (this.blink) {
-	        graphics.drawText('PRESS Z TO START', 'center', 90);
+	        graphics.drawText('PRESS Z TO START', 'center', 80);
 	      }
 	      this.map.render(graphics);
 	      this.character.render(graphics);
@@ -727,18 +729,19 @@
 	  }, {
 	    key: 'render',
 	    value: function render(graphics) {
-	      graphics.clearScreen('#b4a56a');
-	      graphics.drawText('CREATE A NEW RUNJUMPER', 'center', 10);
-	      graphics.drawText('HAIR', 80, 40);
-	      graphics.drawText('BANGS', 80, 50);
-	      graphics.drawText('FACE', 80, 60);
-	      graphics.drawText('BODY', 80, 70);
-	      graphics.drawText('RUN!', 80, 90);
+	      graphics.drawGraphic(this.graphics.frame, 0, 0);
+	      graphics.drawGraphic(this.graphics.playerframe, 0, 0);
+	      graphics.drawText('CREATE A NEW RUNJUMPER', 'center', 20);
+	      graphics.drawText('HAIR', 90, 50);
+	      graphics.drawText('BANGS', 90, 60);
+	      graphics.drawText('FACE', 90, 70);
+	      graphics.drawText('BODY', 90, 80);
+	      graphics.drawText('RUN!', 'center', 110);
 	      if (this.selection < 4) {
-	        graphics.drawText('←      →', 70, this.selection * 10 + 40);
+	        graphics.drawText('←      →', 80, this.selection * 10 + 50);
 	      }
 	      if (this.selection === 4 && this.blink) {
-	        graphics.drawText('[     ]', 70, 90);
+	        graphics.drawText('*     *', 'center', 110);
 	      }
 	      this.character.render(graphics);
 	    }
