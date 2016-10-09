@@ -8,6 +8,7 @@ h1 {
   font-family: 'Bangers', sans-serif;
   text-align: center;
   font-size: 40px;
+  max-height: 42px;
   color: #184060;
   letter-spacing: 0.1em;
   margin: 0 auto 20px auto;

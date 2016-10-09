@@ -439,7 +439,8 @@
 	
 	    this.tiles = params.assets.tiles;
 	    this.graphics = params.assets.graphics;
-	    this.stage = params.mapstring.split('');
+	    this.stage = params.map.data.split('');
+	    this.messages = params.map.messages || [];
 	    this.stageWidth = this.stage.length * this.tiles.mapTiles.tileWidth;
 	    this.scrollSpeed = params.scrollSpeed;
 	    this.bg = params.bg;
@@ -479,6 +480,14 @@
 	      if (this.bg) {
 	        graphics.draw(this.bg2.canvas, Math.floor(this.x * this.bg2.parallaxFactor), 0);
 	        graphics.draw(this.bg1.canvas, Math.floor(this.x * this.bg1.parallaxFactor), 0);
+	      }
+	
+	      var here = Math.floor((-this.x + 11) / this.tiles.mapTiles.tileWidth);
+	      for (var i = 0; i < this.messages.length; i++) {
+	        var message = this.messages[i];
+	        if (message.start < here && message.end > here) {
+	          graphics.drawText(message.text, 'center', 10);
+	        }
 	      }
 	
 	      this.stage.forEach(function (t, index) {
@@ -580,7 +589,7 @@
 	
 	    var _this = _possibleConstructorReturn(this, (TitleScreen.__proto__ || Object.getPrototypeOf(TitleScreen)).call(this, game));
 	
-	    _this.map = new _map2.default({ assets: _this.game.assets, mapstring: "111111111111", scrollSpeed: 0, bg: false });
+	    _this.map = new _map2.default({ assets: _this.game.assets, map: { data: "111111111111" }, scrollSpeed: 0, bg: false });
 	    _this.map.x = -27;
 	    _this.character = new _character2.default({ tiles: _this.tiles, runSpeed: 0.1 });
 	    _this.character.pos.y = 104;
@@ -832,6 +841,10 @@
 	
 	var _character2 = _interopRequireDefault(_character);
 	
+	var _retry = __webpack_require__(25);
+	
+	var _retry2 = _interopRequireDefault(_retry);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -840,7 +853,10 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var map01 = "11111111000111111111111111111000222222222444444400000011111111111111113311331133111111122211113333332222222224444444440000011111";
+	var map01 = {
+	  data: "11111111111111110000011111111111111110011001111111111111111111100000111111111110000333333333300330033003322211111110044444440011001100110011111111111111X",
+	  messages: [{ start: 5, end: 15, text: "PRESS Z TO JUMP" }, { start: 25, end: 35, text: "PRESS X TO HOP" }, { start: 47, end: 57, text: "GOOD LUCK!" }]
+	};
 	
 	var RunningScreen = function (_Screen) {
 	  _inherits(RunningScreen, _Screen);
@@ -850,7 +866,7 @@
 	
 	    var _this = _possibleConstructorReturn(this, (RunningScreen.__proto__ || Object.getPrototypeOf(RunningScreen)).call(this, game));
 	
-	    _this.map = new _map2.default({ assets: _this.game.assets, mapstring: map01, scrollSpeed: -0.1, bg: true });
+	    _this.map = new _map2.default({ assets: _this.game.assets, map: map01, scrollSpeed: -0.1, bg: true });
 	    _this.character = character;
 	    _this.character.map = _this.map;
 	    return _this;
@@ -861,6 +877,9 @@
 	    value: function update(time) {
 	      this.map.update(time);
 	      this.character.update(time);
+	      if (this.character.pos.y > 200) {
+	        this.game.currentScreen = new _retry2.default(this.game, this.character);
+	      }
 	    }
 	  }, {
 	    key: 'render',
@@ -1997,6 +2016,128 @@
 	
 	exports.polyfill = polyfill;
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _screen = __webpack_require__(8);
+	
+	var _screen2 = _interopRequireDefault(_screen);
+	
+	var _utils = __webpack_require__(4);
+	
+	var _running = __webpack_require__(10);
+	
+	var _running2 = _interopRequireDefault(_running);
+	
+	var _create = __webpack_require__(9);
+	
+	var _create2 = _interopRequireDefault(_create);
+	
+	var _title = __webpack_require__(7);
+	
+	var _title2 = _interopRequireDefault(_title);
+	
+	var _character = __webpack_require__(3);
+	
+	var _character2 = _interopRequireDefault(_character);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Retry = function (_Screen) {
+	  _inherits(Retry, _Screen);
+	
+	  function Retry(game, character) {
+	    _classCallCheck(this, Retry);
+	
+	    var _this = _possibleConstructorReturn(this, (Retry.__proto__ || Object.getPrototypeOf(Retry)).call(this, game));
+	
+	    _this.selection = 0;
+	    _this.choices = 2;
+	    _this.character = character;
+	    _this.blink = 0;
+	    return _this;
+	  }
+	
+	  _createClass(Retry, [{
+	    key: 'update',
+	    value: function update(time) {
+	      this.blink = time.ticks % 10 > 5;
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(graphics) {
+	      graphics.drawGraphic(this.graphics.frame, 0, 0);
+	      graphics.drawText('YOU FELL!', 'center', 20);
+	      graphics.drawText('TRY AGAIN?', 'center', 54);
+	      graphics.drawText('NEW RUNJUMPER', 'center', 67);
+	      graphics.drawText('BACK TO TITLE', 'center', 80);
+	
+	      if (this.blink) {
+	        graphics.drawText('*               *', 'center', this.selection * 13 + 54);
+	      }
+	    }
+	  }, {
+	    key: 'nextScreen',
+	    value: function nextScreen() {
+	      if (this.selection === 0) {
+	        this.character.pos = { x: 30, y: 55 };
+	        this.character.velocity = { x: 0, y: 0 };
+	        this.game.currentScreen = new _running2.default(this.game, this.character);
+	      } else if (this.selection === 1) {
+	        this.game.currentScreen = new _create2.default(this.game);
+	      } else {
+	        this.game.currentScreen = new _title2.default(this.game);
+	      }
+	    }
+	  }, {
+	    key: 'selectUp',
+	    value: function selectUp() {
+	      this.selection = Math.max(this.selection - 1, 0);
+	    }
+	  }, {
+	    key: 'selectDown',
+	    value: function selectDown() {
+	      this.selection = Math.min(this.selection + 1, this.choices);
+	    }
+	  }, {
+	    key: 'keydown',
+	    value: function keydown(key, event) {
+	      switch (key) {
+	        case 'z':
+	          this.nextScreen();
+	          break;
+	        case 'ArrowUp':
+	          this.selectUp();
+	          event.preventDefault();
+	          break;
+	        case 'ArrowDown':
+	          this.selectDown();
+	          event.preventDefault();
+	          break;
+	      }
+	    }
+	  }]);
+	
+	  return Retry;
+	}(_screen2.default);
+	
+	exports.default = Retry;
 
 /***/ }
 /******/ ]);

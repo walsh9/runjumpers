@@ -13,7 +13,8 @@ export default class Map {
   constructor(params) {
     this.tiles = params.assets.tiles;
     this.graphics = params.assets.graphics;
-    this.stage = params.mapstring.split('');
+    this.stage = params.map.data.split('');
+    this.messages = params.map.messages || [];
     this.stageWidth = this.stage.length  * this.tiles.mapTiles.tileWidth;
     this.scrollSpeed = params.scrollSpeed;
     this.bg = params.bg;
@@ -44,6 +45,14 @@ export default class Map {
     if (this.bg) {
       graphics.draw(this.bg2.canvas, Math.floor(this.x * this.bg2.parallaxFactor), 0);
       graphics.draw(this.bg1.canvas, Math.floor(this.x * this.bg1.parallaxFactor), 0);
+    }
+
+    let here = Math.floor((-this.x + 11) / this.tiles.mapTiles.tileWidth);
+    for(let i = 0; i < this.messages.length; i++) {
+      let message = this.messages[i];
+      if (message.start < here && message.end > here) {
+        graphics.drawText(message.text, 'center', 10);
+      }
     }
 
     this.stage.forEach((t, index) => {

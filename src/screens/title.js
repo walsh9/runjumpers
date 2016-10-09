@@ -7,7 +7,7 @@ import { randomInt } from '../utils';
 export default class TitleScreen extends Screen {
   constructor(game) {
     super(game);
-    this.map = new Map({assets: this.game.assets, mapstring: "111111111111", scrollSpeed: 0, bg: false});
+    this.map = new Map({assets: this.game.assets, map:{data: "111111111111"}, scrollSpeed: 0, bg: false});
     this.map.x = -27;
     this.character = new Character({tiles: this.tiles, runSpeed: 0.1});
     this.character.pos.y = 104;
