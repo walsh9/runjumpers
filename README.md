@@ -1,6 +1,6 @@
 #runjumpers
 
-<img src="docs/runjumpers.png" width=480>
+<img src="docs/runjumpers.gif" width=316>
 
 An HTML5 game where you run and jump.
 
