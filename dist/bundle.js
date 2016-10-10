@@ -426,18 +426,12 @@
 	  _createClass(Timer, [{
 	    key: "pause",
 	    value: function pause() {
-	      if (this.paused === false) {
-	        this.paused = true;
-	      }
+	      this.paused = true;
 	    }
 	  }, {
 	    key: "unpause",
 	    value: function unpause() {
-	      if (this.paused === true) {
-	        this.currentTime = Date.now();
-	        this.paused = false;
-	        this.start();
-	      }
+	      this.paused = false;
 	    }
 	  }, {
 	    key: "start",
@@ -447,9 +441,7 @@
 	        this.currentTime = Date.now();
 	        this.game.init();
 	      }
-	      if (this.paused === false) {
-	        requestAnimationFrame(this.start.bind(this));
-	      }
+	      requestAnimationFrame(this.start.bind(this));
 	      var newTime = Date.now();
 	      var frameTime = newTime - this.currentTime;
 	      this.currentTime = newTime;
@@ -457,7 +449,9 @@
 	        this.time.delta = Math.min(frameTime, this.timeStep);
 	        frameTime -= this.time.delta;
 	        this.time.runTime += this.time.delta;
-	        this.game.update(this.time);
+	        if (!this.paused) {
+	          this.game.update(this.time);
+	        }
 	      }
 	      this.time.ticks++;
 	      this.game.render();

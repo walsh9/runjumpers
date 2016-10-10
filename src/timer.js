@@ -11,16 +11,10 @@ export default class Timer {
   }
 
   pause() {
-    if (this.paused === false) {
-      this.paused = true;
-    }
+    this.paused = true;
   }
   unpause(){
-    if (this.paused === true) {
-      this.currentTime = Date.now();
-      this.paused = false;
-      this.start();
-    }
+    this.paused = false;
   }
 
   start() {
@@ -29,9 +23,7 @@ export default class Timer {
       this.currentTime = Date.now();
       this.game.init();
     }
-    if (this.paused === false) {
-      requestAnimationFrame(this.start.bind(this));
-    }
+    requestAnimationFrame(this.start.bind(this));
     let newTime = Date.now();
     let frameTime = newTime - this.currentTime;
     this.currentTime = newTime;
@@ -39,7 +31,9 @@ export default class Timer {
       this.time.delta = Math.min(frameTime, this.timeStep);
       frameTime -= this.time.delta;
       this.time.runTime += this.time.delta;
-      this.game.update(this.time);
+      if (!this.paused) {
+        this.game.update(this.time);
+      }
     }
     this.time.ticks++;
     this.game.render();
