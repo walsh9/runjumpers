@@ -6,7 +6,21 @@ export default class Timer {
     this.time.delta = 0;
     this.started = false;
     this.timeStep = timeStep;
+    this.paused = false;
     this.game = game;
+  }
+
+  pause() {
+    if (this.paused === false) {
+      this.paused = true;
+    }
+  }
+  unpause(){
+    if (this.paused === true) {
+      this.currentTime = Date.now();
+      this.paused = false;
+      this.start();
+    }
   }
 
   start() {
@@ -15,7 +29,9 @@ export default class Timer {
       this.currentTime = Date.now();
       this.game.init();
     }
-    requestAnimationFrame(this.start.bind(this));
+    if (this.paused === false) {
+      requestAnimationFrame(this.start.bind(this));
+    }
     let newTime = Date.now();
     let frameTime = newTime - this.currentTime;
     this.currentTime = newTime;

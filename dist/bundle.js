@@ -118,7 +118,14 @@
 	    var key = event.key;
 	    Game.currentScreen.keydown(key, event);
 	  });
+	
 	  var gameTimer = new _timer2.default(Game, 1 / 60);
+	  window.addEventListener('focus', function (event) {
+	    gameTimer.unpause();
+	  });
+	  window.addEventListener('blur', function (event) {
+	    gameTimer.pause();
+	  });
 	  gameTimer.start();
 	};
 	
@@ -406,10 +413,27 @@
 	    this.time.delta = 0;
 	    this.started = false;
 	    this.timeStep = timeStep;
+	    this.paused = false;
 	    this.game = game;
 	  }
 	
 	  _createClass(Timer, [{
+	    key: "pause",
+	    value: function pause() {
+	      if (this.paused === false) {
+	        this.paused = true;
+	      }
+	    }
+	  }, {
+	    key: "unpause",
+	    value: function unpause() {
+	      if (this.paused === true) {
+	        this.currentTime = Date.now();
+	        this.paused = false;
+	        this.start();
+	      }
+	    }
+	  }, {
 	    key: "start",
 	    value: function start() {
 	      if (this.started === false) {
@@ -417,7 +441,9 @@
 	        this.currentTime = Date.now();
 	        this.game.init();
 	      }
-	      requestAnimationFrame(this.start.bind(this));
+	      if (this.paused === false) {
+	        requestAnimationFrame(this.start.bind(this));
+	      }
 	      var newTime = Date.now();
 	      var frameTime = newTime - this.currentTime;
 	      this.currentTime = newTime;

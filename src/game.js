@@ -47,7 +47,14 @@ let start = function(assets) {
     let key = event.key;
     Game.currentScreen.keydown(key, event);
   });
+
   let gameTimer = new Timer(Game, 1 / 60);
+  window.addEventListener('focus', function(event) {
+    gameTimer.unpause();
+  });
+  window.addEventListener('blur', function(event) {
+    gameTimer.pause();
+  });
   gameTimer.start();
 };
 
