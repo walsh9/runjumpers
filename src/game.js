@@ -3,6 +3,9 @@ import Timer from './timer';
 import Graphics from './graphics';
 import BeepMaker from './sound';
 import TitleScreen from './screens/title';
+import keyboardevents from 'keyboardevent-key-polyfill';
+
+keyboardevents.polyfill();
 
 window.Game = {
   init() {
