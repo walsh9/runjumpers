@@ -73,10 +73,12 @@ export default class Retry extends Screen {
       this.nextScreen();
       break;
     case 'ArrowUp':
+    case 'Up':
       this.selectUp();
       event.preventDefault();
       break;
     case 'ArrowDown':
+    case 'Down':
       this.selectDown();
       event.preventDefault();
       break;

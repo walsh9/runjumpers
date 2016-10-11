@@ -82,18 +82,22 @@ export default class CreateScreen extends Screen {
       this.nextScreen();
       break;
     case 'ArrowUp':
+    case 'Up':
       this.selectUp();
       event.preventDefault();
       break;
     case 'ArrowDown':
+    case 'Down':
       this.selectDown();
       event.preventDefault();
       break;
     case 'ArrowLeft':
+    case 'Left':
       this.setLeft();
       event.preventDefault();
       break;
     case 'ArrowRight':
+    case 'Right':
       this.setRight();
       event.preventDefault();
       break;

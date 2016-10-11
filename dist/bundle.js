@@ -53,23 +53,23 @@
 
 	'use strict';
 	
-	var _loader = __webpack_require__(11);
+	var _loader = __webpack_require__(2);
 	
 	var _loader2 = _interopRequireDefault(_loader);
 	
-	var _timer = __webpack_require__(5);
+	var _timer = __webpack_require__(16);
 	
 	var _timer2 = _interopRequireDefault(_timer);
 	
-	var _graphics = __webpack_require__(2);
+	var _graphics = __webpack_require__(17);
 	
 	var _graphics2 = _interopRequireDefault(_graphics);
 	
-	var _sound = __webpack_require__(27);
+	var _sound = __webpack_require__(18);
 	
 	var _sound2 = _interopRequireDefault(_sound);
 	
-	var _title = __webpack_require__(7);
+	var _title = __webpack_require__(19);
 	
 	var _title2 = _interopRequireDefault(_title);
 	
@@ -139,86 +139,6 @@
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .!?,\'":;_-+=/\\[]()#@%{}<>^*&~|→←↑↓○●$€¥'.split('');
-	
-	var Graphics = function () {
-	  function Graphics(ctx) {
-	    _classCallCheck(this, Graphics);
-	
-	    this.ctx = ctx;
-	  }
-	
-	  _createClass(Graphics, [{
-	    key: 'setFont',
-	    value: function setFont(font) {
-	      this.font = font;
-	    }
-	  }, {
-	    key: 'clearScreen',
-	    value: function clearScreen(color) {
-	      this.ctx.fillStyle = color;
-	      this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-	    }
-	  }, {
-	    key: 'drawTile',
-	    value: function drawTile(tileSet, tileX, tileY, x, y) {
-	      var tX = tileSet.tileWidth * tileX;
-	      var tY = tileSet.tileHeight * tileY;
-	      x = Math.floor(x);
-	      y = Math.floor(y);
-	      this.ctx.drawImage(tileSet.img, tX, tY, tileSet.tileWidth, tileSet.tileHeight, x, y, tileSet.tileWidth, tileSet.tileHeight);
-	    }
-	  }, {
-	    key: 'drawGraphic',
-	    value: function drawGraphic(graphic, x, y) {
-	      this.drawTile(graphic, 0, 0, x, y);
-	    }
-	  }, {
-	    key: 'draw',
-	    value: function draw() {
-	      var _ctx;
-	
-	      (_ctx = this.ctx).drawImage.apply(_ctx, arguments);
-	    }
-	  }, {
-	    key: 'drawText',
-	    value: function drawText(text, x, y) {
-	      if (x === 'center') {
-	        x = Math.floor((this.ctx.canvas.width - text.length * (this.font.tileWidth + 1)) / 2);
-	      }
-	      var char = void 0,
-	          charIndex = void 0,
-	          charX = void 0,
-	          charY = void 0;
-	      for (var i = 0; i < text.length; i++) {
-	        char = text.charAt(i);
-	        charIndex = chars.indexOf(char);
-	        charX = x + i * (this.font.tileWidth + 1);
-	        charY = ['g', 'j', 'p', 'q', 'y'].indexOf(char) > -1 ? y + 2 : y;
-	        this.drawTile(this.font, charIndex, 0, charX, charY, this.ctx);
-	      }
-	    }
-	  }]);
-	
-	  return Graphics;
-	}();
-	
-	exports.default = Graphics;
-
-/***/ },
-/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -229,874 +149,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _utils = __webpack_require__(4);
-	
-	var _sounds = __webpack_require__(28);
-	
-	var _sounds2 = _interopRequireDefault(_sounds);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Character = function () {
-	  function Character(charParams, map) {
-	    _classCallCheck(this, Character);
-	
-	    this.tiles = charParams.tiles;
-	    this.runSpeed = charParams.runSpeed;
-	    this.sound = charParams.sound;
-	    this.map = map;
-	    this.parts = {};
-	    this.randomizeParts();
-	    this.pos = { x: 30, y: 55 };
-	    this.velocity = { x: 0, y: 0 };
-	    this.acceleration = { x: 0, y: 0.0005 };
-	    this.state = 'standing';
-	    this.runFrame = 1;
-	  }
-	
-	  _createClass(Character, [{
-	    key: 'update',
-	    value: function update(time, screen) {
-	      this.pos.x += time.delta * this.runSpeed;
-	      var footPos = this.state === 'running' ? 10 : 18;
-	      var floorHeight = 117 - this.map.heightHere(this.pos.x + footPos);
-	      if (!(0, _utils.near)(this.pos.y, floorHeight, 0.1) || this.velocity.y < 0) {
-	        if (this.velocity.y <= 0) {
-	          this.state = 'jumping';
-	        } else {
-	          this.state = 'falling';
-	        }
-	        this.velocity.y += time.delta * this.acceleration.y;
-	        if ((0, _utils.near)(this.velocity.y, 0, 0.0000001)) {
-	          this.velocity.y = 0;
-	        }
-	        this.pos.y += time.delta * this.velocity.y;
-	      } else {
-	        this.state = 'running';
-	        this.velocity.y = 0;
-	        this.pos.y = floorHeight;
-	      }
-	      this.runFrame = time.ticks % 6 < 3 ? 1 : 2;
-	      if (this.pos.y > 200) {
-	        screen.fall();
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(graphics) {
-	      var animFrame = 0;
-	      if (this.state === 'running') {
-	        animFrame = this.runFrame;
-	      } else if (this.state === 'jumping') {
-	        animFrame = 3;
-	      } else if (this.state === 'falling') {
-	        animFrame = 0;
-	      }
-	      graphics.drawTile(this.tiles.rearHair, this.parts.rearHair, 0, this.pos.x, this.pos.y);
-	      graphics.drawTile(this.tiles.body, this.parts.body, animFrame, this.pos.x, this.pos.y);
-	      graphics.drawTile(this.tiles.face, this.parts.face, 0, this.pos.x, this.pos.y);
-	      graphics.drawTile(this.tiles.frontHair, this.parts.frontHair, 0, this.pos.x, this.pos.y);
-	    }
-	  }, {
-	    key: 'jump',
-	    value: function jump() {
-	      if (this.state === 'running') {
-	        var _sound;
-	
-	        (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.jump));
-	        this.velocity.y = -0.24;
-	      }
-	    }
-	  }, {
-	    key: 'hop',
-	    value: function hop() {
-	      if (this.state === 'running') {
-	        var _sound2;
-	
-	        (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.hop));
-	        this.velocity.y = -0.135;
-	      }
-	    }
-	  }, {
-	    key: 'randomizeParts',
-	    value: function randomizeParts() {
-	      this.setRandomPart('rearHair');
-	      this.setRandomPart('face');
-	      this.setRandomPart('body');
-	      this.setRandomPart('frontHair');
-	    }
-	  }, {
-	    key: 'setRandomPart',
-	    value: function setRandomPart(partName) {
-	      this.parts[partName] = Math.floor(Math.random() * this.tiles[partName].tileColumns);
-	    }
-	  }, {
-	    key: 'setNextPart',
-	    value: function setNextPart(partName) {
-	      this.parts[partName] = (0, _utils.mod)(this.parts[partName] + 1, this.tiles[partName].tileColumns);
-	    }
-	  }, {
-	    key: 'setPrevPart',
-	    value: function setPrevPart(partName) {
-	      this.parts[partName] = (0, _utils.mod)(this.parts[partName] - 1, this.tiles[partName].tileColumns);
-	    }
-	  }]);
-	
-	  return Character;
-	}();
-	
-	exports.default = Character;
-
-/***/ },
-/* 4 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.mod = mod;
-	exports.randomInt = randomInt;
-	exports.randomBetween = randomBetween;
-	exports.near = near;
-	exports.shuffle = shuffle;
-	function mod(x, y) {
-	  return (x % y + y) % y;
-	}
-	
-	function randomInt(min, max) {
-	  return Math.floor(Math.random() * (max - min + 1)) + min;
-	}
-	
-	function randomBetween(min, max) {
-	  return Math.random() * (max - min) + min;
-	}
-	
-	function near(num1, num2, threshold) {
-	  return Math.abs(num1 - num2) <= threshold;
-	}
-	
-	function shuffle(array) {
-	  var temporaryValue = void 0,
-	      randomIndex = void 0;
-	  var currentIndex = array.length;
-	  while (0 !== currentIndex) {
-	    randomIndex = Math.floor(Math.random() * currentIndex);
-	    currentIndex -= 1;
-	    temporaryValue = array[currentIndex];
-	    array[currentIndex] = array[randomIndex];
-	    array[randomIndex] = temporaryValue;
-	  }
-	  return array;
-	}
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Timer = function () {
-	  function Timer(game, timeStep) {
-	    _classCallCheck(this, Timer);
-	
-	    this.time = {};
-	    this.time.runTime = 0;
-	    this.time.ticks = 0;
-	    this.time.delta = 0;
-	    this.started = false;
-	    this.timeStep = timeStep;
-	    this.paused = false;
-	    this.game = game;
-	  }
-	
-	  _createClass(Timer, [{
-	    key: "pause",
-	    value: function pause() {
-	      this.paused = true;
-	    }
-	  }, {
-	    key: "unpause",
-	    value: function unpause() {
-	      this.paused = false;
-	    }
-	  }, {
-	    key: "start",
-	    value: function start() {
-	      if (this.started === false) {
-	        this.started = true;
-	        this.currentTime = Date.now();
-	        this.game.init();
-	      }
-	      requestAnimationFrame(this.start.bind(this));
-	      var newTime = Date.now();
-	      var frameTime = newTime - this.currentTime;
-	      this.currentTime = newTime;
-	      while (frameTime > 0) {
-	        this.time.delta = Math.min(frameTime, this.timeStep);
-	        frameTime -= this.time.delta;
-	        this.time.runTime += this.time.delta;
-	        if (!this.paused) {
-	          this.game.update(this.time);
-	        }
-	      }
-	      this.time.ticks++;
-	      this.game.render();
-	    }
-	  }]);
-	
-	  return Timer;
-	}();
-	
-	exports.default = Timer;
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _utils = __webpack_require__(4);
-	
-	var _sounds = __webpack_require__(28);
-	
-	var _sounds2 = _interopRequireDefault(_sounds);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Y_FROM_FLOOR = [128, 112, 96, 80, 64, 48, 32, 16, 0];
-	var GROUND = 0;
-	var COLUMN_ROOT = 1;
-	var COLUMN_MID = 2;
-	var COLUMN_TOP = 3;
-	var CLOUD_RIGHT = 8;
-	var CLOUD_LEFT = 7;
-	var PLATFORM = 9;
-	var GLOW_PILLAR_1 = 12;
-	var GLOW_PILLAR_2 = 13;
-	var GLOW_COLUMN_1 = 14;
-	var GLOW_COLUMN_2 = 15;
-	var HEIGHTS = [-100, 13, 29, 45, 61, 77, 93, 13, 29, 13];
-	
-	var Map = function () {
-	  function Map(params) {
-	    _classCallCheck(this, Map);
-	
-	    this.tiles = params.assets.tiles;
-	    this.graphics = params.assets.graphics;
-	    this.sound = params.sound;
-	    this.stage = params.map.data.split('');
-	    this.messages = params.map.messages || [];
-	    this.stageWidth = this.stage.length * this.tiles.mapTiles.tileWidth;
-	    this.scrollSpeed = params.scrollSpeed;
-	    this.bg = params.bg;
-	    this.x = 0;
-	    this.glow = 0;
-	    if (this.bg) {
-	      var bgSlices = (0, _utils.shuffle)([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-	      this.bg1 = this.createBg('Dark', 15, 0.4, bgSlices.slice(0, 5));
-	      this.bg2 = this.createBg('Light', 20, 0.3, bgSlices.slice(5));
-	    }
-	  }
-	
-	  _createClass(Map, [{
-	    key: 'update',
-	    value: function update(time, screen) {
-	      this.x += time.delta * this.scrollSpeed;
-	      this.glow = time.ticks % 2;
-	      var here = Math.floor((-this.x + 36) / this.tiles.mapTiles.tileWidth);
-	      if (this.stage[here] === '9') {
-	        screen.winLevel();
-	      }
-	    }
-	  }, {
-	    key: 'heightHere',
-	    value: function heightHere(offset) {
-	      var index = Math.floor((-this.x + offset) / this.tiles.mapTiles.tileWidth);
-	      var tile = this.stage[index];
-	      return HEIGHTS[tile];
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(graphics) {
-	      var _this = this;
-	
-	      var leftmostTile = Math.floor(-this.x / this.tiles.mapTiles.tileWidth);
-	      var rightmostTile = leftmostTile + 10;
-	
-	      if (this.bg) {
-	        graphics.draw(this.bg2.canvas, Math.floor(this.x * this.bg2.parallaxFactor), 0);
-	        graphics.draw(this.bg1.canvas, Math.floor(this.x * this.bg1.parallaxFactor), 0);
-	      }
-	
-	      var here = Math.floor((-this.x + 11) / this.tiles.mapTiles.tileWidth);
-	      for (var i = 0; i < this.messages.length; i++) {
-	        var message = this.messages[i];
-	        if (message.start < here && message.end > here) {
-	          graphics.drawText(message.text, 'center', 10);
-	        }
-	      }
-	
-	      this.stage.forEach(function (t, index) {
-	        if (index < leftmostTile || index > rightmostTile) {
-	          return;
-	        }
-	        var x = _this.x + _this.tiles.mapTiles.tileWidth * index;
-	        switch (t) {
-	          case '0':
-	            break;
-	          case '1':
-	          case '2':
-	          case '3':
-	          case '4':
-	          case '5':
-	          case '6':
-	            graphics.drawTile(_this.tiles.mapTiles, PLATFORM, 0, x, Y_FROM_FLOOR[t - 1]);
-	            break;
-	          case '7':
-	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_TOP, 0, x, Y_FROM_FLOOR[0]);
-	            break;
-	          case '8':
-	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_TOP, 0, x, Y_FROM_FLOOR[1]);
-	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_MID, 0, x, Y_FROM_FLOOR[0]);
-	            break;
-	          case '9':
-	            for (var _i = 1; _i < 9; _i++) {
-	              graphics.drawTile(_this.tiles.mapTiles, GLOW_PILLAR_1 + _this.glow, 0, x, Y_FROM_FLOOR[_i]);
-	            }
-	            graphics.drawTile(_this.tiles.mapTiles, GLOW_COLUMN_1 + _this.glow, 0, x, Y_FROM_FLOOR[0]);
-	            break;
-	        }
-	      });
-	    }
-	  }, {
-	    key: 'createBg',
-	    value: function createBg(variant, spacing, parallaxFactor, availableSlices) {
-	      var minWidth = Math.floor((this.stageWidth + 320) * parallaxFactor);
-	      var w = 0;
-	      var possibleSlices = [];
-	      var slices = [];
-	      while (w < minWidth) {
-	        if (possibleSlices.length === 0) {
-	          possibleSlices = (0, _utils.shuffle)(availableSlices.slice());
-	        }
-	        var sliceId = possibleSlices.pop();
-	        var slice = this.graphics['bg' + variant + sliceId];
-	        slices.push(slice);
-	        w += slice.width + spacing;
-	      }
-	
-	      var canvas = document.createElement('canvas');
-	      var ctx = canvas.getContext('2d');
-	      canvas.width = w;
-	      canvas.height = 144;
-	      var x = 0;
-	      slices.forEach(function (slice) {
-	        var y = (0, _utils.randomInt)(0, 2);
-	        ctx.drawImage(slice.img, x, y * 12);
-	        x += slice.width + spacing;
-	      });
-	      return { canvas: canvas, parallaxFactor: parallaxFactor };
-	    }
-	  }]);
-	
-	  return Map;
-	}();
-	
-	exports.default = Map;
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _screen = __webpack_require__(8);
-	
-	var _screen2 = _interopRequireDefault(_screen);
-	
-	var _map = __webpack_require__(6);
-	
-	var _map2 = _interopRequireDefault(_map);
-	
-	var _sounds = __webpack_require__(28);
-	
-	var _sounds2 = _interopRequireDefault(_sounds);
-	
-	var _character = __webpack_require__(3);
-	
-	var _character2 = _interopRequireDefault(_character);
-	
-	var _create = __webpack_require__(9);
-	
-	var _create2 = _interopRequireDefault(_create);
-	
-	var _utils = __webpack_require__(4);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var TitleScreen = function (_Screen) {
-	  _inherits(TitleScreen, _Screen);
-	
-	  function TitleScreen(game) {
-	    _classCallCheck(this, TitleScreen);
-	
-	    var _this = _possibleConstructorReturn(this, (TitleScreen.__proto__ || Object.getPrototypeOf(TitleScreen)).call(this, game));
-	
-	    _this.map = new _map2.default({ assets: _this.game.assets, map: { data: "111111111111" }, scrollSpeed: 0, bg: false, sound: _this.sound });
-	    _this.map.x = -27;
-	    _this.character = new _character2.default({ tiles: _this.tiles, runSpeed: 0.1, sound: _this.sound });
-	    _this.character.pos.y = 104;
-	    _this.character.pos.x = -27;
-	    _this.character.map = _this.map;
-	    _this.nextJump = (0, _utils.randomInt)(500, 2000);
-	    return _this;
-	  }
-	
-	  _createClass(TitleScreen, [{
-	    key: 'update',
-	    value: function update(time) {
-	      this.blink = time.ticks % 50 < 25;
-	      this.character.update(time);
-	      if (this.character.pos.x > 160) {
-	        this.character.randomizeParts();
-	        this.character.velocity.y = 0;
-	        this.character.pos.y = 104;
-	        this.character.pos.x = -27;
-	      }
-	      if (time.runTime > this.nextJump) {
-	        this.character.jump();
-	        this.nextJump = time.runTime + (0, _utils.randomInt)(500, 2000);
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(graphics) {
-	      graphics.clearScreen('#b4a56a');
-	      graphics.drawGraphic(this.graphics.title, 0, 0);
-	      if (this.blink) {
-	        graphics.drawText('PRESS Z TO START', 'center', 80);
-	      }
-	      this.map.render(graphics);
-	      this.character.render(graphics);
-	    }
-	  }, {
-	    key: 'menuChime',
-	    value: function menuChime() {
-	      var _sound, _sound2;
-	
-	      (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.menuSelectA));
-	      (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.menuSelectB));
-	    }
-	  }, {
-	    key: 'keydown',
-	    value: function keydown(key) {
-	      switch (key) {
-	        case 'z':
-	          this.menuChime();
-	          this.game.level = 0;
-	          this.game.fallCount = 0;
-	          this.game.currentScreen = new _create2.default(this.game);
-	          break;
-	      }
-	    }
-	  }]);
-	
-	  return TitleScreen;
-	}(_screen2.default);
-	
-	exports.default = TitleScreen;
-
-/***/ },
-/* 8 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Screen = function () {
-	  function Screen(game) {
-	    _classCallCheck(this, Screen);
-	
-	    this.game = game;
-	    this.tiles = game.assets.tiles;
-	    this.graphics = game.assets.graphics;
-	    this.sound = game.sound;
-	  }
-	
-	  _createClass(Screen, [{
-	    key: "update",
-	    value: function update() {}
-	  }, {
-	    key: "render",
-	    value: function render() {}
-	  }, {
-	    key: "keydown",
-	    value: function keydown() {}
-	  }]);
-	
-	  return Screen;
-	}();
-	
-	exports.default = Screen;
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _screen = __webpack_require__(8);
-	
-	var _screen2 = _interopRequireDefault(_screen);
-	
-	var _utils = __webpack_require__(4);
-	
-	var _sounds = __webpack_require__(28);
-	
-	var _sounds2 = _interopRequireDefault(_sounds);
-	
-	var _running = __webpack_require__(10);
-	
-	var _running2 = _interopRequireDefault(_running);
-	
-	var _character = __webpack_require__(3);
-	
-	var _character2 = _interopRequireDefault(_character);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var CreateScreen = function (_Screen) {
-	  _inherits(CreateScreen, _Screen);
-	
-	  function CreateScreen(game) {
-	    _classCallCheck(this, CreateScreen);
-	
-	    var _this = _possibleConstructorReturn(this, (CreateScreen.__proto__ || Object.getPrototypeOf(CreateScreen)).call(this, game));
-	
-	    _this.selection = 0;
-	    _this.choices = ['rearHair', 'frontHair', 'face', 'body', 'next'];
-	    _this.character = new _character2.default({ tiles: _this.game.assets.tiles, runSpeed: 0, sound: _this.sound });
-	    _this.blink = 0;
-	    return _this;
-	  }
-	
-	  _createClass(CreateScreen, [{
-	    key: 'update',
-	    value: function update(time) {
-	      this.blink = time.ticks % 10 > 5;
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(graphics) {
-	      graphics.drawGraphic(this.graphics.frame, 0, 0);
-	      graphics.drawGraphic(this.graphics.playerframe, 0, 0);
-	      graphics.drawText('CREATE A NEW RUNJUMPER', 'center', 20);
-	      graphics.drawText('HAIR', 90, 50);
-	      graphics.drawText('BANGS', 90, 60);
-	      graphics.drawText('FACE', 90, 70);
-	      graphics.drawText('BODY', 90, 80);
-	      graphics.drawText('RUN!', 'center', 110);
-	      if (this.selection < 4) {
-	        graphics.drawText('←      →', 80, this.selection * 10 + 50);
-	      }
-	      if (this.selection === 4 && this.blink) {
-	        graphics.drawText('*     *', 'center', 110);
-	      }
-	      this.character.render(graphics);
-	    }
-	  }, {
-	    key: 'nextScreen',
-	    value: function nextScreen() {
-	      if (this.selection === 4) {
-	        this.menuChime();
-	        this.game.currentScreen = new _running2.default(this.game, this.character);
-	      }
-	    }
-	  }, {
-	    key: 'menuBeep',
-	    value: function menuBeep() {
-	      var _sound, _sound2;
-	
-	      (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.menuChooseA));
-	      (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.menuChooseB));
-	    }
-	  }, {
-	    key: 'menuChime',
-	    value: function menuChime() {
-	      var _sound3, _sound4;
-	
-	      (_sound3 = this.sound).beep.apply(_sound3, _toConsumableArray(_sounds2.default.menuSelectA));
-	      (_sound4 = this.sound).beep.apply(_sound4, _toConsumableArray(_sounds2.default.menuSelectB));
-	    }
-	  }, {
-	    key: 'selectUp',
-	    value: function selectUp() {
-	      this.selection = Math.max(this.selection - 1, 0);
-	      this.menuBeep();
-	    }
-	  }, {
-	    key: 'selectDown',
-	    value: function selectDown() {
-	      this.selection = Math.min(this.selection + 1, this.choices.length - 1);
-	      this.menuBeep();
-	    }
-	  }, {
-	    key: 'setLeft',
-	    value: function setLeft() {
-	      if (this.selection < 4) {
-	        this.character.setPrevPart(this.choices[this.selection]);
-	      }
-	      this.menuBeep();
-	    }
-	  }, {
-	    key: 'setRight',
-	    value: function setRight() {
-	      if (this.selection < 4) {
-	        this.character.setNextPart(this.choices[this.selection]);
-	      }
-	      this.menuBeep();
-	    }
-	  }, {
-	    key: 'keydown',
-	    value: function keydown(key, event) {
-	      switch (key) {
-	        case 'z':
-	          this.nextScreen();
-	          break;
-	        case 'ArrowUp':
-	          this.selectUp();
-	          event.preventDefault();
-	          break;
-	        case 'ArrowDown':
-	          this.selectDown();
-	          event.preventDefault();
-	          break;
-	        case 'ArrowLeft':
-	          this.setLeft();
-	          event.preventDefault();
-	          break;
-	        case 'ArrowRight':
-	          this.setRight();
-	          event.preventDefault();
-	          break;
-	      }
-	    }
-	  }]);
-	
-	  return CreateScreen;
-	}(_screen2.default);
-	
-	exports.default = CreateScreen;
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _screen = __webpack_require__(8);
-	
-	var _screen2 = _interopRequireDefault(_screen);
-	
-	var _map = __webpack_require__(6);
-	
-	var _map2 = _interopRequireDefault(_map);
-	
-	var _maps = __webpack_require__(26);
-	
-	var _maps2 = _interopRequireDefault(_maps);
-	
-	var _sounds = __webpack_require__(28);
-	
-	var _sounds2 = _interopRequireDefault(_sounds);
-	
-	var _character = __webpack_require__(3);
-	
-	var _character2 = _interopRequireDefault(_character);
-	
-	var _retry = __webpack_require__(25);
-	
-	var _retry2 = _interopRequireDefault(_retry);
-	
-	var _congrats = __webpack_require__(29);
-	
-	var _congrats2 = _interopRequireDefault(_congrats);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var RunningScreen = function (_Screen) {
-	  _inherits(RunningScreen, _Screen);
-	
-	  function RunningScreen(game, character) {
-	    _classCallCheck(this, RunningScreen);
-	
-	    var _this = _possibleConstructorReturn(this, (RunningScreen.__proto__ || Object.getPrototypeOf(RunningScreen)).call(this, game));
-	
-	    _this.map = new _map2.default({ assets: _this.game.assets, map: _maps2.default[_this.game.level], scrollSpeed: -0.1, bg: true, sound: _this.sound });
-	    _this.character = character;
-	    _this.character.map = _this.map;
-	    _this.introTimer = 2000;
-	    return _this;
-	  }
-	
-	  _createClass(RunningScreen, [{
-	    key: 'update',
-	    value: function update(time) {
-	      if (this.introTimer > 0) {
-	        this.introTimer -= time.delta;
-	      } else {
-	        this.map.update(time, this);
-	        this.character.update(time, this);
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(graphics) {
-	      if (this.introTimer > 0) {
-	        graphics.drawGraphic(this.graphics.frame, 0, 0);
-	        graphics.drawText('LEVEL ' + (this.game.level + 1), 'center', 55);
-	        graphics.drawText(_maps2.default[this.game.level].title, 'center', 70);
-	      } else {
-	        graphics.clearScreen('#e6d69c');
-	        this.map.render(graphics);
-	        this.character.render(graphics);
-	      }
-	    }
-	  }, {
-	    key: 'fall',
-	    value: function fall() {
-	      var _sound;
-	
-	      (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.fall));
-	      this.game.fallCount++;
-	      this.game.currentScreen = new _retry2.default(this.game, this.character);
-	    }
-	  }, {
-	    key: 'winSound',
-	    value: function winSound() {
-	      var _sound2, _sound3;
-	
-	      (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.levelWinA));
-	      (_sound3 = this.sound).beep.apply(_sound3, _toConsumableArray(_sounds2.default.levelWinB));
-	    }
-	  }, {
-	    key: 'winLevel',
-	    value: function winLevel() {
-	      this.winSound();
-	      this.game.level++;
-	      if (_maps2.default[this.game.level] !== undefined) {
-	        this.game.currentScreen = new RunningScreen(this.game, this.character);
-	      } else {
-	        this.game.currentScreen = new _congrats2.default(this.game, this.character);
-	      }
-	    }
-	  }, {
-	    key: 'keydown',
-	    value: function keydown(key) {
-	      switch (key) {
-	        case 'z':
-	          if (this.introTimer > 0) {
-	            this.introTimer = 0;
-	          } else {
-	            this.character.jump();
-	          }
-	          break;
-	        case 'x':
-	          this.character.hop();
-	          break;
-	      }
-	    }
-	  }]);
-	
-	  return RunningScreen;
-	}(_screen2.default);
-	
-	exports.default = RunningScreen;
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _promiseFromHash = __webpack_require__(12);
+	var _promiseFromHash = __webpack_require__(3);
 	
 	var _promiseFromHash2 = _interopRequireDefault(_promiseFromHash);
 	
@@ -1189,12 +242,12 @@
 	exports.default = Loader;
 
 /***/ },
-/* 12 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Promise = Promise || __webpack_require__(13).Promise;
+	var Promise = Promise || __webpack_require__(4).Promise;
 	
 	var isArray = function(arr) {
 	    return Array.isArray(arr);
@@ -1259,31 +312,31 @@
 
 
 /***/ },
-/* 13 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Promise = __webpack_require__(14).Promise;
-	var polyfill = __webpack_require__(24).polyfill;
+	var Promise = __webpack_require__(5).Promise;
+	var polyfill = __webpack_require__(15).polyfill;
 	exports.Promise = Promise;
 	exports.polyfill = polyfill;
 
 /***/ },
-/* 14 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var config = __webpack_require__(15).config;
-	var configure = __webpack_require__(15).configure;
-	var objectOrFunction = __webpack_require__(16).objectOrFunction;
-	var isFunction = __webpack_require__(16).isFunction;
-	var now = __webpack_require__(16).now;
-	var cast = __webpack_require__(17).cast;
-	var all = __webpack_require__(18).all;
-	var race = __webpack_require__(19).race;
-	var staticResolve = __webpack_require__(20).resolve;
-	var staticReject = __webpack_require__(21).reject;
-	var asap = __webpack_require__(22).asap;
+	var config = __webpack_require__(6).config;
+	var configure = __webpack_require__(6).configure;
+	var objectOrFunction = __webpack_require__(7).objectOrFunction;
+	var isFunction = __webpack_require__(7).isFunction;
+	var now = __webpack_require__(7).now;
+	var cast = __webpack_require__(8).cast;
+	var all = __webpack_require__(9).all;
+	var race = __webpack_require__(10).race;
+	var staticResolve = __webpack_require__(11).resolve;
+	var staticReject = __webpack_require__(12).reject;
+	var asap = __webpack_require__(13).asap;
 	
 	var counter = 0;
 	
@@ -1487,7 +540,7 @@
 	exports.Promise = Promise;
 
 /***/ },
-/* 15 */
+/* 6 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1507,7 +560,7 @@
 	exports.configure = configure;
 
 /***/ },
-/* 16 */
+/* 7 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1534,7 +587,7 @@
 	exports.now = now;
 
 /***/ },
-/* 17 */
+/* 8 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1606,14 +659,14 @@
 	exports.cast = cast;
 
 /***/ },
-/* 18 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	/* global toString */
 	
-	var isArray = __webpack_require__(16).isArray;
-	var isFunction = __webpack_require__(16).isFunction;
+	var isArray = __webpack_require__(7).isArray;
+	var isFunction = __webpack_require__(7).isFunction;
 	
 	/**
 	  Returns a promise that is fulfilled when all the given promises have been
@@ -1704,12 +757,12 @@
 	exports.all = all;
 
 /***/ },
-/* 19 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	/* global toString */
-	var isArray = __webpack_require__(16).isArray;
+	var isArray = __webpack_require__(7).isArray;
 	
 	/**
 	  `RSVP.race` allows you to watch a series of promises and act as soon as the
@@ -1798,7 +851,7 @@
 	exports.race = race;
 
 /***/ },
-/* 20 */
+/* 11 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1845,7 +898,7 @@
 	exports.resolve = resolve;
 
 /***/ },
-/* 21 */
+/* 12 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1897,7 +950,7 @@
 	exports.reject = reject;
 
 /***/ },
-/* 22 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {"use strict";
@@ -1961,10 +1014,10 @@
 	}
 	
 	exports.asap = asap;
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(23)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(14)))
 
 /***/ },
-/* 23 */
+/* 14 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -2150,13 +1203,13 @@
 
 
 /***/ },
-/* 24 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
 	/*global self*/
-	var RSVPPromise = __webpack_require__(14).Promise;
-	var isFunction = __webpack_require__(16).isFunction;
+	var RSVPPromise = __webpack_require__(5).Promise;
+	var isFunction = __webpack_require__(7).isFunction;
 	
 	function polyfill() {
 	  var local;
@@ -2195,6 +1248,717 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Timer = function () {
+	  function Timer(game, timeStep) {
+	    _classCallCheck(this, Timer);
+	
+	    this.time = {};
+	    this.time.runTime = 0;
+	    this.time.ticks = 0;
+	    this.time.delta = 0;
+	    this.started = false;
+	    this.timeStep = timeStep;
+	    this.paused = false;
+	    this.game = game;
+	  }
+	
+	  _createClass(Timer, [{
+	    key: "pause",
+	    value: function pause() {
+	      this.paused = true;
+	    }
+	  }, {
+	    key: "unpause",
+	    value: function unpause() {
+	      this.paused = false;
+	    }
+	  }, {
+	    key: "start",
+	    value: function start() {
+	      if (this.started === false) {
+	        this.started = true;
+	        this.currentTime = Date.now();
+	        this.game.init();
+	      }
+	      requestAnimationFrame(this.start.bind(this));
+	      var newTime = Date.now();
+	      var frameTime = newTime - this.currentTime;
+	      this.currentTime = newTime;
+	      while (frameTime > 0) {
+	        this.time.delta = Math.min(frameTime, this.timeStep);
+	        frameTime -= this.time.delta;
+	        this.time.runTime += this.time.delta;
+	        if (!this.paused) {
+	          this.game.update(this.time);
+	        }
+	      }
+	      this.time.ticks++;
+	      this.game.render();
+	    }
+	  }]);
+	
+	  return Timer;
+	}();
+	
+	exports.default = Timer;
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .!?,\'":;_-+=/\\[]()#@%{}<>^*&~|→←↑↓○●$€¥'.split('');
+	
+	var Graphics = function () {
+	  function Graphics(ctx) {
+	    _classCallCheck(this, Graphics);
+	
+	    this.ctx = ctx;
+	  }
+	
+	  _createClass(Graphics, [{
+	    key: 'setFont',
+	    value: function setFont(font) {
+	      this.font = font;
+	    }
+	  }, {
+	    key: 'clearScreen',
+	    value: function clearScreen(color) {
+	      this.ctx.fillStyle = color;
+	      this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+	    }
+	  }, {
+	    key: 'drawTile',
+	    value: function drawTile(tileSet, tileX, tileY, x, y) {
+	      var tX = tileSet.tileWidth * tileX;
+	      var tY = tileSet.tileHeight * tileY;
+	      x = Math.floor(x);
+	      y = Math.floor(y);
+	      this.ctx.drawImage(tileSet.img, tX, tY, tileSet.tileWidth, tileSet.tileHeight, x, y, tileSet.tileWidth, tileSet.tileHeight);
+	    }
+	  }, {
+	    key: 'drawGraphic',
+	    value: function drawGraphic(graphic, x, y) {
+	      this.drawTile(graphic, 0, 0, x, y);
+	    }
+	  }, {
+	    key: 'draw',
+	    value: function draw() {
+	      var _ctx;
+	
+	      (_ctx = this.ctx).drawImage.apply(_ctx, arguments);
+	    }
+	  }, {
+	    key: 'drawText',
+	    value: function drawText(text, x, y) {
+	      if (x === 'center') {
+	        x = Math.floor((this.ctx.canvas.width - text.length * (this.font.tileWidth + 1)) / 2);
+	      }
+	      var char = void 0,
+	          charIndex = void 0,
+	          charX = void 0,
+	          charY = void 0;
+	      for (var i = 0; i < text.length; i++) {
+	        char = text.charAt(i);
+	        charIndex = chars.indexOf(char);
+	        charX = x + i * (this.font.tileWidth + 1);
+	        charY = ['g', 'j', 'p', 'q', 'y'].indexOf(char) > -1 ? y + 2 : y;
+	        this.drawTile(this.font, charIndex, 0, charX, charY, this.ctx);
+	      }
+	    }
+	  }]);
+	
+	  return Graphics;
+	}();
+	
+	exports.default = Graphics;
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var BeepMaker = function BeepMaker() {
+	  var audioContext = window.AudioContext || window.webkitAudioContext;
+	  this.context = new audioContext();
+	  this.muted = false;
+	
+	  this.freqMutator = 1;
+	  this.freq2Mutator = 1;
+	  this.timeMutator = 1;
+	};
+	
+	BeepMaker.prototype.beep = function (frequency, frequency2, type, durationSeconds, volume) {
+	  if (this.muted) {
+	    return;
+	  }
+	  var ctx = this.context;
+	  var osc = ctx.createOscillator();
+	  var gainOsc = ctx.createGain();
+	
+	  var vol = volume || 0.5;
+	  osc.type = type;
+	  osc.frequency.setValueAtTime(frequency, ctx.currentTime);
+	  osc.frequency.exponentialRampToValueAtTime(frequency2, ctx.currentTime + durationSeconds * 0.9);
+	  osc.frequency.exponentialRampToValueAtTime(frequency, ctx.currentTime + durationSeconds);
+	
+	  gainOsc.gain.setValueAtTime(vol, ctx.currentTime);
+	  gainOsc.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + durationSeconds);
+	
+	  osc.connect(gainOsc);
+	  gainOsc.connect(ctx.destination);
+	
+	  osc.start(ctx.currentTime);
+	  osc.stop(ctx.currentTime + durationSeconds);
+	};
+	
+	exports.default = BeepMaker;
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _screen = __webpack_require__(20);
+	
+	var _screen2 = _interopRequireDefault(_screen);
+	
+	var _map = __webpack_require__(21);
+	
+	var _map2 = _interopRequireDefault(_map);
+	
+	var _sounds = __webpack_require__(23);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
+	var _character = __webpack_require__(24);
+	
+	var _character2 = _interopRequireDefault(_character);
+	
+	var _create = __webpack_require__(25);
+	
+	var _create2 = _interopRequireDefault(_create);
+	
+	var _utils = __webpack_require__(22);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var TitleScreen = function (_Screen) {
+	  _inherits(TitleScreen, _Screen);
+	
+	  function TitleScreen(game) {
+	    _classCallCheck(this, TitleScreen);
+	
+	    var _this = _possibleConstructorReturn(this, (TitleScreen.__proto__ || Object.getPrototypeOf(TitleScreen)).call(this, game));
+	
+	    _this.map = new _map2.default({ assets: _this.game.assets, map: { data: "111111111111" }, scrollSpeed: 0, bg: false, sound: _this.sound });
+	    _this.map.x = -27;
+	    _this.character = new _character2.default({ tiles: _this.tiles, runSpeed: 0.1, sound: _this.sound });
+	    _this.character.pos.y = 104;
+	    _this.character.pos.x = -27;
+	    _this.character.map = _this.map;
+	    _this.nextJump = (0, _utils.randomInt)(500, 2000);
+	    return _this;
+	  }
+	
+	  _createClass(TitleScreen, [{
+	    key: 'update',
+	    value: function update(time) {
+	      this.blink = time.ticks % 50 < 25;
+	      this.character.update(time);
+	      if (this.character.pos.x > 160) {
+	        this.character.randomizeParts();
+	        this.character.velocity.y = 0;
+	        this.character.pos.y = 104;
+	        this.character.pos.x = -27;
+	      }
+	      if (time.runTime > this.nextJump) {
+	        this.character.jump();
+	        this.nextJump = time.runTime + (0, _utils.randomInt)(500, 2000);
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(graphics) {
+	      graphics.clearScreen('#b4a56a');
+	      graphics.drawGraphic(this.graphics.title, 0, 0);
+	      if (this.blink) {
+	        graphics.drawText('PRESS Z TO START', 'center', 80);
+	      }
+	      this.map.render(graphics);
+	      this.character.render(graphics);
+	    }
+	  }, {
+	    key: 'menuChime',
+	    value: function menuChime() {
+	      var _sound, _sound2;
+	
+	      (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.menuSelectA));
+	      (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.menuSelectB));
+	    }
+	  }, {
+	    key: 'keydown',
+	    value: function keydown(key) {
+	      switch (key) {
+	        case 'z':
+	          this.menuChime();
+	          this.game.level = 0;
+	          this.game.fallCount = 0;
+	          this.game.currentScreen = new _create2.default(this.game);
+	          break;
+	      }
+	    }
+	  }]);
+	
+	  return TitleScreen;
+	}(_screen2.default);
+	
+	exports.default = TitleScreen;
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Screen = function () {
+	  function Screen(game) {
+	    _classCallCheck(this, Screen);
+	
+	    this.game = game;
+	    this.tiles = game.assets.tiles;
+	    this.graphics = game.assets.graphics;
+	    this.sound = game.sound;
+	  }
+	
+	  _createClass(Screen, [{
+	    key: "update",
+	    value: function update() {}
+	  }, {
+	    key: "render",
+	    value: function render() {}
+	  }, {
+	    key: "keydown",
+	    value: function keydown() {}
+	  }]);
+	
+	  return Screen;
+	}();
+	
+	exports.default = Screen;
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _utils = __webpack_require__(22);
+	
+	var _sounds = __webpack_require__(23);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Y_FROM_FLOOR = [128, 112, 96, 80, 64, 48, 32, 16, 0];
+	var GROUND = 0;
+	var COLUMN_ROOT = 1;
+	var COLUMN_MID = 2;
+	var COLUMN_TOP = 3;
+	var CLOUD_RIGHT = 8;
+	var CLOUD_LEFT = 7;
+	var PLATFORM = 9;
+	var GLOW_PILLAR_1 = 12;
+	var GLOW_PILLAR_2 = 13;
+	var GLOW_COLUMN_1 = 14;
+	var GLOW_COLUMN_2 = 15;
+	var HEIGHTS = [-100, 13, 29, 45, 61, 77, 93, 13, 29, 13];
+	
+	var Map = function () {
+	  function Map(params) {
+	    _classCallCheck(this, Map);
+	
+	    this.tiles = params.assets.tiles;
+	    this.graphics = params.assets.graphics;
+	    this.sound = params.sound;
+	    this.stage = params.map.data.split('');
+	    this.messages = params.map.messages || [];
+	    this.stageWidth = this.stage.length * this.tiles.mapTiles.tileWidth;
+	    this.scrollSpeed = params.scrollSpeed;
+	    this.bg = params.bg;
+	    this.x = 0;
+	    this.glow = 0;
+	    if (this.bg) {
+	      var bgSlices = (0, _utils.shuffle)([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+	      this.bg1 = this.createBg('Dark', 15, 0.4, bgSlices.slice(0, 5));
+	      this.bg2 = this.createBg('Light', 20, 0.3, bgSlices.slice(5));
+	    }
+	  }
+	
+	  _createClass(Map, [{
+	    key: 'update',
+	    value: function update(time, screen) {
+	      this.x += time.delta * this.scrollSpeed;
+	      this.glow = time.ticks % 2;
+	      var here = Math.floor((-this.x + 36) / this.tiles.mapTiles.tileWidth);
+	      if (this.stage[here] === '9') {
+	        screen.winLevel();
+	      }
+	    }
+	  }, {
+	    key: 'heightHere',
+	    value: function heightHere(offset) {
+	      var index = Math.floor((-this.x + offset) / this.tiles.mapTiles.tileWidth);
+	      var tile = this.stage[index];
+	      return HEIGHTS[tile];
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(graphics) {
+	      var _this = this;
+	
+	      var leftmostTile = Math.floor(-this.x / this.tiles.mapTiles.tileWidth);
+	      var rightmostTile = leftmostTile + 10;
+	
+	      if (this.bg) {
+	        graphics.draw(this.bg2.canvas, Math.floor(this.x * this.bg2.parallaxFactor), 0);
+	        graphics.draw(this.bg1.canvas, Math.floor(this.x * this.bg1.parallaxFactor), 0);
+	      }
+	
+	      var here = Math.floor((-this.x + 11) / this.tiles.mapTiles.tileWidth);
+	      for (var i = 0; i < this.messages.length; i++) {
+	        var message = this.messages[i];
+	        if (message.start < here && message.end > here) {
+	          graphics.drawText(message.text, 'center', 10);
+	        }
+	      }
+	
+	      this.stage.forEach(function (t, index) {
+	        if (index < leftmostTile || index > rightmostTile) {
+	          return;
+	        }
+	        var x = _this.x + _this.tiles.mapTiles.tileWidth * index;
+	        switch (t) {
+	          case '0':
+	            break;
+	          case '1':
+	          case '2':
+	          case '3':
+	          case '4':
+	          case '5':
+	          case '6':
+	            graphics.drawTile(_this.tiles.mapTiles, PLATFORM, 0, x, Y_FROM_FLOOR[t - 1]);
+	            break;
+	          case '7':
+	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_TOP, 0, x, Y_FROM_FLOOR[0]);
+	            break;
+	          case '8':
+	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_TOP, 0, x, Y_FROM_FLOOR[1]);
+	            graphics.drawTile(_this.tiles.mapTiles, COLUMN_MID, 0, x, Y_FROM_FLOOR[0]);
+	            break;
+	          case '9':
+	            for (var _i = 1; _i < 9; _i++) {
+	              graphics.drawTile(_this.tiles.mapTiles, GLOW_PILLAR_1 + _this.glow, 0, x, Y_FROM_FLOOR[_i]);
+	            }
+	            graphics.drawTile(_this.tiles.mapTiles, GLOW_COLUMN_1 + _this.glow, 0, x, Y_FROM_FLOOR[0]);
+	            break;
+	        }
+	      });
+	    }
+	  }, {
+	    key: 'createBg',
+	    value: function createBg(variant, spacing, parallaxFactor, availableSlices) {
+	      var minWidth = Math.floor((this.stageWidth + 320) * parallaxFactor);
+	      var w = 0;
+	      var possibleSlices = [];
+	      var slices = [];
+	      while (w < minWidth) {
+	        if (possibleSlices.length === 0) {
+	          possibleSlices = (0, _utils.shuffle)(availableSlices.slice());
+	        }
+	        var sliceId = possibleSlices.pop();
+	        var slice = this.graphics['bg' + variant + sliceId];
+	        slices.push(slice);
+	        w += slice.width + spacing;
+	      }
+	
+	      var canvas = document.createElement('canvas');
+	      var ctx = canvas.getContext('2d');
+	      canvas.width = w;
+	      canvas.height = 144;
+	      var x = 0;
+	      slices.forEach(function (slice) {
+	        var y = (0, _utils.randomInt)(0, 2);
+	        ctx.drawImage(slice.img, x, y * 12);
+	        x += slice.width + spacing;
+	      });
+	      return { canvas: canvas, parallaxFactor: parallaxFactor };
+	    }
+	  }]);
+	
+	  return Map;
+	}();
+	
+	exports.default = Map;
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.mod = mod;
+	exports.randomInt = randomInt;
+	exports.randomBetween = randomBetween;
+	exports.near = near;
+	exports.shuffle = shuffle;
+	function mod(x, y) {
+	  return (x % y + y) % y;
+	}
+	
+	function randomInt(min, max) {
+	  return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+	
+	function randomBetween(min, max) {
+	  return Math.random() * (max - min) + min;
+	}
+	
+	function near(num1, num2, threshold) {
+	  return Math.abs(num1 - num2) <= threshold;
+	}
+	
+	function shuffle(array) {
+	  var temporaryValue = void 0,
+	      randomIndex = void 0;
+	  var currentIndex = array.length;
+	  while (0 !== currentIndex) {
+	    randomIndex = Math.floor(Math.random() * currentIndex);
+	    currentIndex -= 1;
+	    temporaryValue = array[currentIndex];
+	    array[currentIndex] = array[randomIndex];
+	    array[randomIndex] = temporaryValue;
+	  }
+	  return array;
+	}
+
+/***/ },
+/* 23 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = {
+	  jump: [500, 3500, 'square', 0.3],
+	  hop: [500, 1500, 'square', 0.2],
+	  fall: [1500, 500, 'sine', 2],
+	  menuChooseA: [1000, 1500, 'triangle', 0.1],
+	  menuChooseB: [1100, 2800, 'triangle', 0.2],
+	  menuSelectA: [2000, 2000, 'square', 0.8, 0.1],
+	  menuSelectB: [2500, 2500, 'square', 1.0, 0.1],
+	  levelWinA: [2000, 2000, 'square', 1.5, 0.1],
+	  levelWinB: [1000, 2500, 'square', 1.7, 0.1]
+	};
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _utils = __webpack_require__(22);
+	
+	var _sounds = __webpack_require__(23);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Character = function () {
+	  function Character(charParams, map) {
+	    _classCallCheck(this, Character);
+	
+	    this.tiles = charParams.tiles;
+	    this.runSpeed = charParams.runSpeed;
+	    this.sound = charParams.sound;
+	    this.map = map;
+	    this.parts = {};
+	    this.randomizeParts();
+	    this.pos = { x: 30, y: 55 };
+	    this.velocity = { x: 0, y: 0 };
+	    this.acceleration = { x: 0, y: 0.0005 };
+	    this.state = 'standing';
+	    this.runFrame = 1;
+	  }
+	
+	  _createClass(Character, [{
+	    key: 'update',
+	    value: function update(time, screen) {
+	      this.pos.x += time.delta * this.runSpeed;
+	      var footPos = this.state === 'running' ? 10 : 18;
+	      var floorHeight = 117 - this.map.heightHere(this.pos.x + footPos);
+	      if (!(0, _utils.near)(this.pos.y, floorHeight, 0.1) || this.velocity.y < 0) {
+	        if (this.velocity.y <= 0) {
+	          this.state = 'jumping';
+	        } else {
+	          this.state = 'falling';
+	        }
+	        this.velocity.y += time.delta * this.acceleration.y;
+	        if ((0, _utils.near)(this.velocity.y, 0, 0.0000001)) {
+	          this.velocity.y = 0;
+	        }
+	        this.pos.y += time.delta * this.velocity.y;
+	      } else {
+	        this.state = 'running';
+	        this.velocity.y = 0;
+	        this.pos.y = floorHeight;
+	      }
+	      this.runFrame = time.ticks % 6 < 3 ? 1 : 2;
+	      if (this.pos.y > 200) {
+	        screen.fall();
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(graphics) {
+	      var animFrame = 0;
+	      if (this.state === 'running') {
+	        animFrame = this.runFrame;
+	      } else if (this.state === 'jumping') {
+	        animFrame = 3;
+	      } else if (this.state === 'falling') {
+	        animFrame = 0;
+	      }
+	      graphics.drawTile(this.tiles.rearHair, this.parts.rearHair, 0, this.pos.x, this.pos.y);
+	      graphics.drawTile(this.tiles.body, this.parts.body, animFrame, this.pos.x, this.pos.y);
+	      graphics.drawTile(this.tiles.face, this.parts.face, 0, this.pos.x, this.pos.y);
+	      graphics.drawTile(this.tiles.frontHair, this.parts.frontHair, 0, this.pos.x, this.pos.y);
+	    }
+	  }, {
+	    key: 'jump',
+	    value: function jump() {
+	      if (this.state === 'running') {
+	        var _sound;
+	
+	        (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.jump));
+	        this.velocity.y = -0.24;
+	      }
+	    }
+	  }, {
+	    key: 'hop',
+	    value: function hop() {
+	      if (this.state === 'running') {
+	        var _sound2;
+	
+	        (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.hop));
+	        this.velocity.y = -0.135;
+	      }
+	    }
+	  }, {
+	    key: 'randomizeParts',
+	    value: function randomizeParts() {
+	      this.setRandomPart('rearHair');
+	      this.setRandomPart('face');
+	      this.setRandomPart('body');
+	      this.setRandomPart('frontHair');
+	    }
+	  }, {
+	    key: 'setRandomPart',
+	    value: function setRandomPart(partName) {
+	      this.parts[partName] = Math.floor(Math.random() * this.tiles[partName].tileColumns);
+	    }
+	  }, {
+	    key: 'setNextPart',
+	    value: function setNextPart(partName) {
+	      this.parts[partName] = (0, _utils.mod)(this.parts[partName] + 1, this.tiles[partName].tileColumns);
+	    }
+	  }, {
+	    key: 'setPrevPart',
+	    value: function setPrevPart(partName) {
+	      this.parts[partName] = (0, _utils.mod)(this.parts[partName] - 1, this.tiles[partName].tileColumns);
+	    }
+	  }]);
+	
+	  return Character;
+	}();
+	
+	exports.default = Character;
+
+/***/ },
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -2206,29 +1970,356 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _screen = __webpack_require__(8);
+	var _screen = __webpack_require__(20);
 	
 	var _screen2 = _interopRequireDefault(_screen);
 	
-	var _utils = __webpack_require__(4);
+	var _utils = __webpack_require__(22);
 	
-	var _sounds = __webpack_require__(28);
+	var _sounds = __webpack_require__(23);
 	
 	var _sounds2 = _interopRequireDefault(_sounds);
 	
-	var _running = __webpack_require__(10);
+	var _running = __webpack_require__(26);
 	
 	var _running2 = _interopRequireDefault(_running);
 	
-	var _create = __webpack_require__(9);
+	var _character = __webpack_require__(24);
+	
+	var _character2 = _interopRequireDefault(_character);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var CreateScreen = function (_Screen) {
+	  _inherits(CreateScreen, _Screen);
+	
+	  function CreateScreen(game) {
+	    _classCallCheck(this, CreateScreen);
+	
+	    var _this = _possibleConstructorReturn(this, (CreateScreen.__proto__ || Object.getPrototypeOf(CreateScreen)).call(this, game));
+	
+	    _this.selection = 0;
+	    _this.choices = ['rearHair', 'frontHair', 'face', 'body', 'next'];
+	    _this.character = new _character2.default({ tiles: _this.game.assets.tiles, runSpeed: 0, sound: _this.sound });
+	    _this.blink = 0;
+	    return _this;
+	  }
+	
+	  _createClass(CreateScreen, [{
+	    key: 'update',
+	    value: function update(time) {
+	      this.blink = time.ticks % 10 > 5;
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(graphics) {
+	      graphics.drawGraphic(this.graphics.frame, 0, 0);
+	      graphics.drawGraphic(this.graphics.playerframe, 0, 0);
+	      graphics.drawText('CREATE A NEW RUNJUMPER', 'center', 20);
+	      graphics.drawText('HAIR', 90, 50);
+	      graphics.drawText('BANGS', 90, 60);
+	      graphics.drawText('FACE', 90, 70);
+	      graphics.drawText('BODY', 90, 80);
+	      graphics.drawText('RUN!', 'center', 110);
+	      if (this.selection < 4) {
+	        graphics.drawText('←      →', 80, this.selection * 10 + 50);
+	      }
+	      if (this.selection === 4 && this.blink) {
+	        graphics.drawText('*     *', 'center', 110);
+	      }
+	      this.character.render(graphics);
+	    }
+	  }, {
+	    key: 'nextScreen',
+	    value: function nextScreen() {
+	      if (this.selection === 4) {
+	        this.menuChime();
+	        this.game.currentScreen = new _running2.default(this.game, this.character);
+	      }
+	    }
+	  }, {
+	    key: 'menuBeep',
+	    value: function menuBeep() {
+	      var _sound, _sound2;
+	
+	      (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.menuChooseA));
+	      (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.menuChooseB));
+	    }
+	  }, {
+	    key: 'menuChime',
+	    value: function menuChime() {
+	      var _sound3, _sound4;
+	
+	      (_sound3 = this.sound).beep.apply(_sound3, _toConsumableArray(_sounds2.default.menuSelectA));
+	      (_sound4 = this.sound).beep.apply(_sound4, _toConsumableArray(_sounds2.default.menuSelectB));
+	    }
+	  }, {
+	    key: 'selectUp',
+	    value: function selectUp() {
+	      this.selection = Math.max(this.selection - 1, 0);
+	      this.menuBeep();
+	    }
+	  }, {
+	    key: 'selectDown',
+	    value: function selectDown() {
+	      this.selection = Math.min(this.selection + 1, this.choices.length - 1);
+	      this.menuBeep();
+	    }
+	  }, {
+	    key: 'setLeft',
+	    value: function setLeft() {
+	      if (this.selection < 4) {
+	        this.character.setPrevPart(this.choices[this.selection]);
+	      }
+	      this.menuBeep();
+	    }
+	  }, {
+	    key: 'setRight',
+	    value: function setRight() {
+	      if (this.selection < 4) {
+	        this.character.setNextPart(this.choices[this.selection]);
+	      }
+	      this.menuBeep();
+	    }
+	  }, {
+	    key: 'keydown',
+	    value: function keydown(key, event) {
+	      switch (key) {
+	        case 'z':
+	          this.nextScreen();
+	          break;
+	        case 'ArrowUp':
+	        case 'Up':
+	          this.selectUp();
+	          event.preventDefault();
+	          break;
+	        case 'ArrowDown':
+	        case 'Down':
+	          this.selectDown();
+	          event.preventDefault();
+	          break;
+	        case 'ArrowLeft':
+	        case 'Left':
+	          this.setLeft();
+	          event.preventDefault();
+	          break;
+	        case 'ArrowRight':
+	        case 'Right':
+	          this.setRight();
+	          event.preventDefault();
+	          break;
+	      }
+	    }
+	  }]);
+	
+	  return CreateScreen;
+	}(_screen2.default);
+	
+	exports.default = CreateScreen;
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _screen = __webpack_require__(20);
+	
+	var _screen2 = _interopRequireDefault(_screen);
+	
+	var _map = __webpack_require__(21);
+	
+	var _map2 = _interopRequireDefault(_map);
+	
+	var _maps = __webpack_require__(27);
+	
+	var _maps2 = _interopRequireDefault(_maps);
+	
+	var _sounds = __webpack_require__(23);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
+	var _character = __webpack_require__(24);
+	
+	var _character2 = _interopRequireDefault(_character);
+	
+	var _retry = __webpack_require__(28);
+	
+	var _retry2 = _interopRequireDefault(_retry);
+	
+	var _congrats = __webpack_require__(29);
+	
+	var _congrats2 = _interopRequireDefault(_congrats);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var RunningScreen = function (_Screen) {
+	  _inherits(RunningScreen, _Screen);
+	
+	  function RunningScreen(game, character) {
+	    _classCallCheck(this, RunningScreen);
+	
+	    var _this = _possibleConstructorReturn(this, (RunningScreen.__proto__ || Object.getPrototypeOf(RunningScreen)).call(this, game));
+	
+	    _this.map = new _map2.default({ assets: _this.game.assets, map: _maps2.default[_this.game.level], scrollSpeed: -0.1, bg: true, sound: _this.sound });
+	    _this.character = character;
+	    _this.character.map = _this.map;
+	    _this.introTimer = 2000;
+	    return _this;
+	  }
+	
+	  _createClass(RunningScreen, [{
+	    key: 'update',
+	    value: function update(time) {
+	      if (this.introTimer > 0) {
+	        this.introTimer -= time.delta;
+	      } else {
+	        this.map.update(time, this);
+	        this.character.update(time, this);
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(graphics) {
+	      if (this.introTimer > 0) {
+	        graphics.drawGraphic(this.graphics.frame, 0, 0);
+	        graphics.drawText('LEVEL ' + (this.game.level + 1), 'center', 55);
+	        graphics.drawText(_maps2.default[this.game.level].title, 'center', 70);
+	      } else {
+	        graphics.clearScreen('#e6d69c');
+	        this.map.render(graphics);
+	        this.character.render(graphics);
+	      }
+	    }
+	  }, {
+	    key: 'fall',
+	    value: function fall() {
+	      var _sound;
+	
+	      (_sound = this.sound).beep.apply(_sound, _toConsumableArray(_sounds2.default.fall));
+	      this.game.fallCount++;
+	      this.game.currentScreen = new _retry2.default(this.game, this.character);
+	    }
+	  }, {
+	    key: 'winSound',
+	    value: function winSound() {
+	      var _sound2, _sound3;
+	
+	      (_sound2 = this.sound).beep.apply(_sound2, _toConsumableArray(_sounds2.default.levelWinA));
+	      (_sound3 = this.sound).beep.apply(_sound3, _toConsumableArray(_sounds2.default.levelWinB));
+	    }
+	  }, {
+	    key: 'winLevel',
+	    value: function winLevel() {
+	      this.winSound();
+	      this.game.level++;
+	      if (_maps2.default[this.game.level] !== undefined) {
+	        this.game.currentScreen = new RunningScreen(this.game, this.character);
+	      } else {
+	        this.game.currentScreen = new _congrats2.default(this.game, this.character);
+	      }
+	    }
+	  }, {
+	    key: 'keydown',
+	    value: function keydown(key) {
+	      switch (key) {
+	        case 'z':
+	          if (this.introTimer > 0) {
+	            this.introTimer = 0;
+	          } else {
+	            this.character.jump();
+	          }
+	          break;
+	        case 'x':
+	          this.character.hop();
+	          break;
+	      }
+	    }
+	  }]);
+	
+	  return RunningScreen;
+	}(_screen2.default);
+	
+	exports.default = RunningScreen;
+
+/***/ },
+/* 27 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = [{ title: "WELCOME TO RUNJUMPERS",
+	  data: "7777777777777777000007777777777777777007700770077777777777777777700000111111111110000333333333300330033003322211111110044444440011001100110077777777777777977",
+	  messages: [{ start: 3, end: 15, text: "PRESS Z TO JUMP" }, { start: 25, end: 35, text: "PRESS X TO HOP" }, { start: 47, end: 57, text: "GOOD LUCK!" }] }, { title: "HOP, SKIP, JUMP",
+	  data: "7777777777777777000088888800770000088000000777777777777770002220004440006666666666005004003002007777777777700070007000700077777777770000077777777777777977",
+	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }, { title: "UPS AND DOWNS",
+	  data: "777777777777777700008800088000880000022200222001555155515551555103333333300000333333300330033000007777770077777777977",
+	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }, { title: "JUMPRUNNERS",
+	  data: "777777777777777700033300033300100000200000300000400000555000555000003330010501050105010501050103010007777700000888888000007777700770077007700777777977",
+	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }, { title: "THE FINAL CHALLENGE",
+	  data: "777777777777777700003300100004400010000333003330000220000100044400000077700770007700070007007770000077777777977",
+	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }];
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _screen = __webpack_require__(20);
+	
+	var _screen2 = _interopRequireDefault(_screen);
+	
+	var _utils = __webpack_require__(22);
+	
+	var _sounds = __webpack_require__(23);
+	
+	var _sounds2 = _interopRequireDefault(_sounds);
+	
+	var _running = __webpack_require__(26);
+	
+	var _running2 = _interopRequireDefault(_running);
+	
+	var _create = __webpack_require__(25);
 	
 	var _create2 = _interopRequireDefault(_create);
 	
-	var _title = __webpack_require__(7);
+	var _title = __webpack_require__(19);
 	
 	var _title2 = _interopRequireDefault(_title);
 	
-	var _character = __webpack_require__(3);
+	var _character = __webpack_require__(24);
 	
 	var _character2 = _interopRequireDefault(_character);
 	
@@ -2327,10 +2418,12 @@
 	          this.nextScreen();
 	          break;
 	        case 'ArrowUp':
+	        case 'Up':
 	          this.selectUp();
 	          event.preventDefault();
 	          break;
 	        case 'ArrowDown':
+	        case 'Down':
 	          this.selectDown();
 	          event.preventDefault();
 	          break;
@@ -2344,93 +2437,6 @@
 	exports.default = Retry;
 
 /***/ },
-/* 26 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = [{ title: "WELCOME TO RUNJUMPERS",
-	  data: "7777777777777777000007777777777777777007700770077777777777777777700000111111111110000333333333300330033003322211111110044444440011001100110077777777777777977",
-	  messages: [{ start: 3, end: 15, text: "PRESS Z TO JUMP" }, { start: 25, end: 35, text: "PRESS X TO HOP" }, { start: 47, end: 57, text: "GOOD LUCK!" }] }, { title: "HOP, SKIP, JUMP",
-	  data: "7777777777777777000088888800770000088000000777777777777770002220004440006666666666005004003002007777777777700070007000700077777777770000077777777777777977",
-	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }, { title: "UPS AND DOWNS",
-	  data: "777777777777777700008800088000880000022200222001555155515551555103333333300000333333300330033000007777770077777777977",
-	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }, { title: "JUMPRUNNERS",
-	  data: "777777777777777700033300033300100000200000300000400000555000555000003330010501050105010501050103010007777700000888888000007777700770077007700777777977",
-	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }, { title: "THE FINAL CHALLENGE",
-	  data: "777777777777777700003300100004400010000333003330000220000100044400000077700770007700070007007770000077777777977",
-	  messages: [{ start: 3, end: 15, text: "GOOD LUCK!" }] }];
-
-/***/ },
-/* 27 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var BeepMaker = function BeepMaker() {
-	  var audioContext = window.AudioContext || window.webkitAudioContext;
-	  this.context = new audioContext();
-	  this.muted = false;
-	
-	  this.freqMutator = 1;
-	  this.freq2Mutator = 1;
-	  this.timeMutator = 1;
-	};
-	
-	BeepMaker.prototype.beep = function (frequency, frequency2, type, durationSeconds, volume) {
-	  if (this.muted) {
-	    return;
-	  }
-	  var ctx = this.context;
-	  var osc = ctx.createOscillator();
-	  var gainOsc = ctx.createGain();
-	
-	  var vol = volume || 0.5;
-	  osc.type = type;
-	  osc.frequency.setValueAtTime(frequency, ctx.currentTime);
-	  osc.frequency.exponentialRampToValueAtTime(frequency2, ctx.currentTime + durationSeconds * 0.9);
-	  osc.frequency.exponentialRampToValueAtTime(frequency, ctx.currentTime + durationSeconds);
-	
-	  gainOsc.gain.setValueAtTime(vol, ctx.currentTime);
-	  gainOsc.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + durationSeconds);
-	
-	  osc.connect(gainOsc);
-	  gainOsc.connect(ctx.destination);
-	
-	  osc.start(ctx.currentTime);
-	  osc.stop(ctx.currentTime + durationSeconds);
-	};
-	
-	exports.default = BeepMaker;
-
-/***/ },
-/* 28 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = {
-	  jump: [500, 3500, 'square', 0.3],
-	  hop: [500, 1500, 'square', 0.2],
-	  fall: [1500, 500, 'sine', 2],
-	  menuChooseA: [1000, 1500, 'triangle', 0.1],
-	  menuChooseB: [1100, 2800, 'triangle', 0.2],
-	  menuSelectA: [2000, 2000, 'square', 0.8, 0.1],
-	  menuSelectB: [2500, 2500, 'square', 1.0, 0.1],
-	  levelWinA: [2000, 2000, 'square', 1.5, 0.1],
-	  levelWinB: [1000, 2500, 'square', 1.7, 0.1]
-	};
-
-/***/ },
 /* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -2442,29 +2448,29 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _screen = __webpack_require__(8);
+	var _screen = __webpack_require__(20);
 	
 	var _screen2 = _interopRequireDefault(_screen);
 	
-	var _utils = __webpack_require__(4);
+	var _utils = __webpack_require__(22);
 	
-	var _sounds = __webpack_require__(28);
+	var _sounds = __webpack_require__(23);
 	
 	var _sounds2 = _interopRequireDefault(_sounds);
 	
-	var _running = __webpack_require__(10);
+	var _running = __webpack_require__(26);
 	
 	var _running2 = _interopRequireDefault(_running);
 	
-	var _create = __webpack_require__(9);
+	var _create = __webpack_require__(25);
 	
 	var _create2 = _interopRequireDefault(_create);
 	
-	var _title = __webpack_require__(7);
+	var _title = __webpack_require__(19);
 	
 	var _title2 = _interopRequireDefault(_title);
 	
-	var _character = __webpack_require__(3);
+	var _character = __webpack_require__(24);
 	
 	var _character2 = _interopRequireDefault(_character);
 	
